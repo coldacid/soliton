@@ -35,8 +35,6 @@
 static ULONG About_AboutMUI(/*struct IClass* cl,*/ Object* obj/*, Msg msg*/)
 {
   Object* app = (Object*)xget(obj, MUIA_ApplicationObject);
-
-#ifndef USE_ZUNE
   Object* aboutwin = AboutmuiObject,
                        MUIA_Window_RefWindow    , obj,
                        MUIA_Aboutmui_Application, app,
@@ -44,9 +42,6 @@ static ULONG About_AboutMUI(/*struct IClass* cl,*/ Object* obj/*, Msg msg*/)
   if(aboutwin)
     setatt(aboutwin, MUIA_Window_Open, TRUE);
   return 0;
-#else
-  return WindowObject, End;
-#endif
 }
 
 /****************************************************************************************
