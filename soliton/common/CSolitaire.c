@@ -1399,7 +1399,7 @@ DISPATCHERPROTO(CSolitaire_Dispatcher)
                                     ((struct MUIP_Cardgame_DragAccept*)msg)->size,
                                     ((struct MUIP_Cardgame_DragAccept*)msg)->cards) : 0UL);
 
-    case MUIM_Cardgame_DragDone   : if(data->gameonline && !data->stats.finished )
+    case MUIM_Cardgame_DragDone   : if(data->gameonline && !data->stats.finished)
                                       dragDone(data, ((struct MUIP_Cardgame_DragDone*)msg)->source,
                                                    ((struct MUIP_Cardgame_DragDone*)msg)->dest,
                                                    ((struct MUIP_Cardgame_DragDone*)msg)->size);
@@ -1410,13 +1410,13 @@ DISPATCHERPROTO(CSolitaire_Dispatcher)
                                     ((struct MUIP_Cardgame_ClickCard*)msg)->nr,
                                     ((struct MUIP_Cardgame_ClickCard*)msg)->dblclck) : 0UL);
   
-    case MUIM_Cardgame_TimerTick  : if (data->gameonline)
+    case MUIM_Cardgame_TimerTick  : if (data->gameonline && !data->stats.finished)
                                       timerTick(data, ((struct MUIP_Cardgame_TimerTick*)msg)->sec);
                                     return 0;
 
     case MUIM_CSolitaire_NewGame  : NewGame(data);       return 0;
-    case MUIM_CSolitaire_Undo     : Undo(data);          return 0;
-    case MUIM_CSolitaire_Sweep    : Sweep(data);         return 0;
+    case MUIM_CSolitaire_Undo     : if(!data->stats.finished) Undo(data);  return 0;
+    case MUIM_CSolitaire_Sweep    : if(!data->stats.finished) Sweep(data); return 0;
     case MUIM_CSolitaire_Move     : Suggest(data, TRUE); return 0;
     case MUIM_CSolitaire_GameMode : return SetGameMode(cl, obj, ((struct MUIP_CSolitaire_GameMode *)msg)->mode);
   }
