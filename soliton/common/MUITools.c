@@ -47,12 +47,21 @@ LONG xget(Object* obj, ULONG attribute)
   getatt(obj, attribute, &x);
   return x;
 }
-#if !defined(USE_ZUNE) && !defined(__MORPHOS__)
-ULONG DoSuperNew(struct IClass* cl, Object* obj, ULONG tag1,...)
+
+#ifndef __MORPHOS__
+ULONG VARARGS68K DoSuperNew(struct IClass* cl, Object* obj, ...)
 {
-  return DoSuperMethod(cl, obj, OM_NEW, &tag1, NULL);
+	ULONG rc;
+
+	VA_LIST args;
+	VA_START(args,obj);
+  rc = DoSuperMethod(cl, obj, OM_NEW, VA_ARG(args,struct TagItem*), NULL);
+  VA_END(args);
+  
+	return rc;
 }
 #endif
+
 /****************************************************************************************
   MUI-Creation"makros"
 ****************************************************************************************/

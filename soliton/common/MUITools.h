@@ -27,6 +27,7 @@
 
 #include "SDI_compiler.h"
 #include "SDI_hook.h"
+#include "SDI_stdarg.h"
 
 #define TAGBASE_KAI (TAG_USER | (0617 << 16))
 
@@ -41,7 +42,7 @@ LONG xget(Object* obj, ULONG attribute);
 #ifdef __MORPHOS__
 #include <proto/alib.h>
 #else
-ULONG DoSuperNew(struct IClass* cl, Object* obj, ULONG tag1, ...);
+ULONG VARARGS68K DoSuperNew(struct IClass* cl, Object* obj, ...);
 #endif
 void ErrorReq(int messagenum);
 
