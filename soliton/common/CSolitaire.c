@@ -1196,18 +1196,24 @@ static BOOL clickCard(struct CSolitaire_Data * data, int p, int nr, BOOL dblclck
 
 static ULONG SetGameMode(struct IClass* cl, Object* obj, enum GameMode mode)
 {
-  struct Settings *s;
+	Object *app;
   struct CSolitaire_Data * data;
   struct TagItem ti[5];
+
   ti[0].ti_Tag = MUIA_Cardgame_RasterX;
   ti[1].ti_Tag = MUIA_Cardgame_RasterY;
   ti[2].ti_Tag = MUIA_Cardgame_Piles;
-  ti[3].ti_Tag = MUIA_Cardgame_NoREKOBack;
   ti[4].ti_Tag = TAG_DONE;
 
   data = (struct CSolitaire_Data *) INST_DATA(cl,obj);
-  s = (struct Settings*)xget((Object*) xget(obj, MUIA_ApplicationObject), MUIA_Soliton_Settings);
-  ti[3].ti_Data = s->rekoback ? 0 : 1;
+
+  if ((app = (Object*)xget(obj, MUIA_ApplicationObject)))
+  {
+    struct Settings *s;
+    s = (struct Settings*)xget(app, MUIA_Soliton_Settings);
+    ti[3].ti_Tag = MUIA_Cardgame_NoREKOBack;
+    ti[3].ti_Data = s->rekoback ? 0 : 1;
+  } else ti[3].ti_Tag = TAG_DONE;
 
   switch(mode)
   {
@@ -1253,6 +1259,7 @@ static ULONG CSolitaire_New(struct IClass* cl, Object* obj, struct opSet* msg)
     data->timer      = (Object*)GetTagData(MUIA_CSolitaire_Timer     , 0, msg->ops_AttrList);
     data->movebutton = (Object*)GetTagData(MUIA_CSolitaire_MoveButton, 0, msg->ops_AttrList);
     data->score      = (Object*)GetTagData(MUIA_CSolitaire_Score     , 0, msg->ops_AttrList);
+    SetGameMode(cl,obj,GAMEMODE_KLONDIKE);
     return (ULONG) obj;
   }
   else
