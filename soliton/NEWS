@@ -1,5 +1,6 @@
-WHAT'S CHANGED FROM 2.1 to 2.2
- * Uses now standard AmigaOS like version scheme
+WHAT'S CHANGED FROM 2.1 to 2.2 (03/16/2005)
+ * Uses now standard AmigaOS version scheme
+ * Minor changes
  * Ported to OS4
 
 WHAT'S CHANGED FROM 2.00 to 2.1
