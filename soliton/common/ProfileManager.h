@@ -19,6 +19,10 @@
 #ifndef INCLUDE_PROFILEMANAGER_H
 #define INCLUDE_PROFILEMANAGER_H
 
+#ifndef DOS_DOS_H
+#include <dos/dos.h>
+#endif
+
 #include "MUITools.h"
 
 extern struct MUI_CustomClass *CL_ProfileManager;

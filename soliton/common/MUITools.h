@@ -19,7 +19,11 @@
 #ifndef INCLUDE_MUITOOLS_H
 #define INCLUDE_MUITOOLS_H
 
+#ifdef USE_ZUNE
+#include <mui.h>
+#else
 #include <libraries/mui.h>
+#endif
 
 /****************************************************************************************
   MUI
