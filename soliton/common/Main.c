@@ -196,7 +196,7 @@ static void ExitAll(void)
   main
 ****************************************************************************************/
 
-#ifdef __STORM__
+#if defined(__STORMGCC__) || defined(__STORM__)
 void wbmain(struct WBStartup *wbmsg)
 {
 	char *args[2], game[256];
