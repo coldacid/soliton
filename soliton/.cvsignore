@@ -4,3 +4,4 @@ Soliton.*
 *.info
 Soliton2
 SCOPTIONS
+ppc-amigaos-objs
