@@ -324,7 +324,9 @@ Au_tomat. aufdecken
 ;_Auto open
 ;
 MSG_SETTINGS_AUTOOPEN_HELP
-Oberste Karte eines Stapels\naufdecken, sobald sie frei wird\n(Erhöht die Bequemlichkeit).
+Oberste Karte eines Stapels\n\
+aufdecken, sobald sie frei wird\n\
+(Erhöht die Bequemlichkeit).
 ;Automatically turn around the\n\
 ;topmost face-down card of a stack.\n\
 ;This is just more comfortable\n\
@@ -361,7 +363,10 @@ Name des Profils
 ;Name of the profile
 ;
 MSG_SETTINGS_PROFILES_HELP
-Liste der Graphikprofile.\nEin Profil dient dazu, eine Spielkarten-\ndatei und ein Hintergrundmuster unter einem\ngemeinsamen Namen zusammenzufassen.
+Liste der Graphikprofile.\n\
+Ein Profil dient dazu, eine Spielkarten-\n\
+datei und ein Hintergrundmuster unter einem\n\
+gemeinsamen Namen zusammenzufassen.
 ;List of all profiles.\n\
 ;A profile is a combination\n\
 ;of a cardset and a pattern\n\
@@ -428,6 +433,16 @@ abgelegt werden, statt auf rot auf schwarz\n\
 und umgekehrt.
 ;Place cards on equal colored cards\n\
 ;instead of red/black mixed.
+;
+MSG_SETTINGS_REKOBACK
+_REKO Stackkarten
+;REKO _backcards
+;
+MSG_SETTINGS_REKOBACK_HELP
+Nutzen der 4 Stackkarten, wenn ein\n\
+Reko-Kartensatz geladen wird.
+;Use the 4 stack backcards\n\
+;when loading a reko cardset.
 ;
 ;
 ;
@@ -706,6 +721,14 @@ Standard Klein
 ;Standard Small
 ;
 MSG_LOADING_CARDSET
-\033bLade...
-;\033bLoading...
+\033bLade Kartensatz...
+;\033bLoading cardset...
+;
+MSG_LOADING_PATTERN
+\033bLade Hintergrund...
+;\033bLoading pattern...
+;
+MSG_EXTRACTING_CARDSET
+Extrahiere Kartensatz...
+;\033bExtracting cardset...
 ;
