@@ -147,7 +147,7 @@ static void LoadHighscores(struct Statistics_Data *data)
         {
           struct Score* s;
 
-          if((s = (struct Score *) AllocVec(sizeof(struct Score), MEMF_PUBLIC)))
+          if((s = (struct Score *) AllocVec(sizeof(struct Score), MEMF_PUBLIC)))
           {
             if(!getlin(f, s->name, sizeof(s->name)) ||
             !getlin(f, s->date, sizeof(s->date)))

@@ -301,8 +301,6 @@ static void NewGame(struct CSolitaire_Data *data)
   struct Settings * s = (struct Settings*) xget((Object*)xget(data->obj, MUIA_ApplicationObject),
   MUIA_Soliton_Settings);
 
-  setatt(data->obj, MUIA_Cardgame_NoREKOBack, s->rekoback ? 0 : 1);
-
   if(data->gamemode == GAMEMODE_FREECELL)
   {
     int last;
@@ -326,8 +324,8 @@ static void NewGame(struct CSolitaire_Data *data)
     last = 52;
     for(i = 0; i < 8; i++)
     {
-      DoMethod(data->obj, MUIM_Cardgame_SetCards, i, &cards[last], s->stack > i ? 1 : 0);
       if(s->stack > i) --last;
+      DoMethod(data->obj, MUIM_Cardgame_SetCards, i, &cards[last], s->stack > i ? 1 : 0);
     }
     for(i = 8; i < 12-s->stack; i++)
     {
@@ -406,6 +404,7 @@ static void NewGame(struct CSolitaire_Data *data)
     setatt(data->obj, MUIA_Cardgame_TimerRunning, FALSE);
   DoMethod(data->obj, MUIM_Cardgame_TimerReset);
 
+  setatt(data->obj, MUIA_Cardgame_NoREKOBack, s->rekoback ? 0 : 1);
   data->gameonline = TRUE;
 }
 
@@ -1196,7 +1195,7 @@ static BOOL clickCard(struct CSolitaire_Data * data, int p, int nr, BOOL dblclck
 
 static ULONG SetGameMode(struct IClass* cl, Object* obj, enum GameMode mode)
 {
-	Object *app;
+  Object *app;
   struct CSolitaire_Data * data;
   struct TagItem ti[5];
 
@@ -1207,7 +1206,7 @@ static ULONG SetGameMode(struct IClass* cl, Object* obj, enum GameMode mode)
 
   data = (struct CSolitaire_Data *) INST_DATA(cl,obj);
 
-  if ((app = (Object*)xget(obj, MUIA_ApplicationObject)))
+  if((app = (Object*)xget(obj, MUIA_ApplicationObject)))
   {
     struct Settings *s;
     s = (struct Settings*)xget(app, MUIA_Soliton_Settings);

@@ -67,7 +67,7 @@ static struct InternalImage iUndo1 = {
 #include "IMG_CUndo2.c"
 static struct InternalImage iUndo2 = {
   IMG_CUndo2_body,    
-  IMG_CUNDO2_WIDTH,   IMG_CUNDO2_HEIGHT,
+  IMG_CUNDO2_WIDTH,   IMG_CUNDO2_HEIGHT,
   IMG_CUNDO2_DEPTH,   IMG_CUNDO2_COMPRESSION,
   IMG_CUNDO2_MASKING, IMG_CUndo2_colors
 };
@@ -105,7 +105,7 @@ static struct InternalImage iSweep2 = {
   IMG_CSweep2_body,     
   IMG_CSWEEP2_WIDTH,   IMG_CSWEEP2_HEIGHT,
   IMG_CSWEEP2_DEPTH,   IMG_CSWEEP2_COMPRESSION,
-  IMG_CSWEEP2_MASKING, IMG_CSweep2_colors
+  IMG_CSWEEP2_MASKING, IMG_CSweep2_colors
 };
 
 #define USE_IMG_CMOVE1_COLORS

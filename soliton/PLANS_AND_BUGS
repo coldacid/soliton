@@ -10,10 +10,6 @@ ToDo:
  - Add somewhat nicer default cardset handling (images for numbers and
    signs internally)
  - get updated locale files and docs
- - fix refresh problems introduced in V2.1
-   - wrong refresh on klondike stack in 3 cards mode, when only 2 cards
-     come from hidden stack (seems the background is drawn at wrong position).
-   - switching gamemode does not refresh
  - move date generation to makefile (used in Main.c)
  - fix cases, where saved settings are ignored on loading (gamemode -->
    display gamemode with checkmark menu)

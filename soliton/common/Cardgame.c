@@ -35,10 +35,6 @@
 
 #include "IMG_Time.c"
 
-#ifdef DEBUG
-#include <proto/dos.h>
-#endif
-
 struct Device *TimerBase;
 
 static void drawBackground(struct Cardgame_Data *data, struct RastPort *rp, int x, int y, int w,
@@ -84,13 +80,9 @@ struct Cardgame_Data
   STRPTR                      pattern_name;
 
   Object *                    cardset;
-  LONG                        cardset_width;
-  LONG                        cardset_height;
   struct BitMap *             cardset_bmp;
   STRPTR                      cardset_name;
 
-  BOOL                        rekomode;
-  BOOL			      norekoback;
   LONG                        cardWidth;
   LONG                        cardWidth2;
   LONG                        cardHeight;
@@ -108,6 +100,8 @@ struct Cardgame_Data
   LONG                        ghostW;
   LONG                        ghostH;
   BOOL                        opaque;          /* opaque cards - off if buffer not allocatable */
+  BOOL                        rekomode;
+  BOOL			      norekoback;
 
   Object *                    statusWin;
   Object *                    statusText;
@@ -266,7 +260,7 @@ static void PileUpdate(struct Pile *p, struct RastPort* rp, LONG xx, LONG yy)
     if(PileEmpty(p))
     {
       if(p->back) c = 102;
-      else if(p->type < 'T') c = 80+p->type-'A';
+      else if(p->type < 'T') c = 200+p->type-'A';
       else c = 1;
     }
     else 
@@ -313,7 +307,7 @@ static void PileUpdate(struct Pile *p, struct RastPort* rp, LONG xx, LONG yy)
     {
       c = p->back ? 102 : 1;
       drawCard(p->data, rp, c, xx, yy, 0);
-      xx += p->data->cardHeight;
+      xx += p->data->cardWidth;
     }
     else
     {
@@ -436,7 +430,7 @@ static BOOL PileFitsDrag(struct Pile *p, struct Pile *drag)
 
 static void Init(struct Cardgame_Data *data, Object *o)
 {
-  memset(data, sizeof(struct Cardgame_Data), 0);
+  memset(data, 0, sizeof(struct Cardgame_Data));
   data->obj            = o;
   data->dragpile       = PileNew(1);
   data->dragpile->data = data;
@@ -685,10 +679,15 @@ static void drawCard(struct Cardgame_Data *data, struct RastPort *rp, int nr, in
   {
     int ix, iy;
 
-    if(nr >= 80 && nr <= 83 && (!data->rekomode || data->norekoback))
+    if(nr >= 200 && (!data->rekomode || data->norekoback))
       nr = 1;
 
-    if(nr > 100) /* facedown */
+    if(nr >= 200)
+    {
+      ix = (13+nr-200) * data->cardWidth;
+      iy = 3*data->cardHeight;
+    }
+    else if(nr > 100) /* facedown */
     {
       ix = 13 * data->cardWidth;
       iy = 0;
@@ -697,11 +696,6 @@ static void drawCard(struct Cardgame_Data *data, struct RastPort *rp, int nr, in
     {
       ix = 13 * data->cardWidth;
       iy = data->cardHeight;
-    }
-    else if(nr >= 80)
-    {
-      ix = (13+nr-80) * data->cardWidth;
-      iy = 3*data->cardHeight;
     }
     else
     {
@@ -716,6 +710,9 @@ static void drawCard(struct Cardgame_Data *data, struct RastPort *rp, int nr, in
   else
   {
     int x2 = x + w - 1, y2 = y + h - 1;
+
+    if(nr >= 200)
+      nr = 1;
 
     if(nr > 100) /* facedown */
       SetAPen(rp, 3);
@@ -1303,7 +1300,6 @@ static void ghostMove(struct Cardgame_Data *data, int x, int y)
     else if (y + data->ghostH > h1)
       y = h1 - data->ghostH;
   }
-
   if(data->opaque)
   {
     int x1 = data->ghostX, y1 = data->ghostY,
@@ -1529,6 +1525,83 @@ static ULONG _SetGraphic(struct IClass* cl, Object* obj,
   return TRUE;
 }
 
+static void GetGhostBuffers(struct Cardgame_Data *data)
+{
+  setPilesPos(data, 100, 100);
+
+  bufferDispose(data->ghostBuffer);
+  bufferDispose(data->ghostBuffer2);
+  bufferDispose(data->ghostBufferOld);
+  bufferDispose(data->ghostBufferOld2);
+  data->ghostBuffer = data->ghostBuffer2 =
+  data->ghostBufferOld = data->ghostBufferOld2 = NULL;
+
+  if(data->cardset)
+  {
+    int w = 10, h = 10, i, d;
+    struct Screen *scr;
+    struct BitMap *frndbmp;
+
+    scr = _screen(data->obj);
+
+    /* Buffer */
+    for(i = 0; i < data->pileSize; i++)
+    {
+      struct Pile *p = data->pile+i;
+      int pw, ph;
+
+      pw = PileWidth(p, TRUE) + 1;
+      ph = PileHeight(p, TRUE) + 1;
+
+      if(pw > w) w = pw;
+      if(ph > h) h = ph;
+    }
+    if(h > scr->Height)
+      h = scr->Height;
+
+    d = GetBitMapAttr(scr->RastPort.BitMap, BMA_DEPTH);
+    frndbmp = scr->RastPort.BitMap;
+    data->opaque = TRUE;
+
+    if(w * h > data->cardWidth * h + data->cardHeight * w ) /* w and h buffer */
+    {
+      data->ghostBuffer     = bufferCreate(w, data->cardHeight, d, frndbmp);
+      data->ghostBuffer2    = bufferCreate(w, data->cardHeight, d, frndbmp);
+      data->ghostBufferOld  = bufferCreate(data->cardWidth, h, d, frndbmp);
+      data->ghostBufferOld2 = bufferCreate(data->cardWidth, h, d, frndbmp);
+
+      if(!data->ghostBuffer    || !data->ghostBuffer2  ||
+         !data->ghostBufferOld || !data->ghostBufferOld2)
+      {
+        data->opaque = FALSE;
+        bufferDispose(data->ghostBuffer);
+        bufferDispose(data->ghostBuffer2);
+        bufferDispose(data->ghostBufferOld);
+        bufferDispose(data->ghostBufferOld2);
+        data->ghostBuffer = data->ghostBuffer2 =
+        data->ghostBufferOld = data->ghostBufferOld2 = NULL;
+      }
+    }
+    else /* wh buffer */
+    {
+      data->ghostBuffer     = bufferCreate(w, h, d, frndbmp);
+      data->ghostBuffer2    = bufferCreate(w, h, d, frndbmp);
+      data->ghostBufferOld  = NULL;
+      data->ghostBufferOld2 = NULL;
+
+      if(!data->ghostBuffer || !data->ghostBuffer2)
+      {
+        data->opaque = FALSE;
+        bufferDispose(data->ghostBuffer);
+        bufferDispose(data->ghostBuffer2);
+        data->ghostBuffer = data->ghostBuffer2 = NULL;
+      }
+    }
+  }
+  else
+    data->opaque = FALSE;
+}
+
 static ULONG _Setup(struct IClass* cl, Object* obj, Msg msg)
 {
   struct Cardgame_Data *data;
@@ -1607,75 +1680,12 @@ static ULONG _Setup(struct IClass* cl, Object* obj, Msg msg)
       }
       else
       {
-        int w = 10, h = 10, i, d;
-        struct BitMap *frndbmp;
-
-        data->cardset_width  = bhd->bmh_Width;
-        data->cardset_height = bhd->bmh_Height;
-
-        data->rekomode = (data->cardset_width == 17*88 && data->cardset_height == 130*4);
-        data->cardHeight  = data->cardset_height / 4;
-        data->cardWidth = data->cardset_width / (data->rekomode ? 17 : 14);
+        data->cardHeight = bhd->bmh_Height / 4;
+        data->rekomode   = (bhd->bmh_Width == 17*88 && data->cardHeight == 130);
+        data->cardWidth  = bhd->bmh_Width / (data->rekomode ? 17 : 14);
 
         data->cardWidth2  = data->cardWidth  / minHPart;
         data->cardHeight2 = data->cardHeight / minVPart;
-
-        setPilesPos(data, 100, 100);
-
-        /* Buffer */
-        for(i = 0; i < data->pileSize; i++)
-        {
-          struct Pile *p = data->pile+i;
-          int pw, ph;
-
-          pw = PileWidth(p, TRUE) + 1;
-          ph = PileHeight(p, TRUE) + 1;
-
-          if(pw > w) w = pw;
-          if(ph > h) h = ph;
-        }
-        if(h > scr->Height)
-          h = scr->Height;
-
-        d = GetBitMapAttr(scr->RastPort.BitMap, BMA_DEPTH);
-        frndbmp = scr->RastPort.BitMap;
-        data->opaque = TRUE;
-
-        if(w * h > data->cardWidth * h + data->cardHeight * w ) /* w and h buffer */
-        {
-          data->ghostBuffer     = bufferCreate(w, data->cardHeight, d, frndbmp);
-          data->ghostBuffer2    = bufferCreate(w, data->cardHeight, d, frndbmp);
-          data->ghostBufferOld  = bufferCreate(data->cardWidth, h, d, frndbmp);
-          data->ghostBufferOld2 = bufferCreate(data->cardWidth, h, d, frndbmp);
-
-          if(!data->ghostBuffer    || !data->ghostBuffer2  ||
-             !data->ghostBufferOld || !data->ghostBufferOld2)
-          {
-            data->opaque = FALSE;
-            bufferDispose(data->ghostBuffer);
-            bufferDispose(data->ghostBuffer2);
-            bufferDispose(data->ghostBufferOld);
-            bufferDispose(data->ghostBufferOld2);
-            data->ghostBuffer = data->ghostBuffer2 =
-            data->ghostBufferOld = data->ghostBufferOld2 = NULL;
-          }
-        }
-        else /* wh buffer */
-        {
-          data->ghostBuffer     = bufferCreate(w, h, d, frndbmp);
-          data->ghostBuffer2    = bufferCreate(w, h, d, frndbmp);
-          data->ghostBufferOld  = NULL;
-          data->ghostBufferOld2 = NULL;
-
-          if(!data->ghostBuffer || !data->ghostBuffer2)
-          {
-            data->opaque = FALSE;
-            bufferDispose(data->ghostBuffer);
-            bufferDispose(data->ghostBuffer2);
-            data->ghostBuffer = data->ghostBuffer2 = NULL;
-          }
-        }
-
       }
     } /* if cardset */
   } /* if cardset_name */
@@ -1687,11 +1697,8 @@ static ULONG _Setup(struct IClass* cl, Object* obj, Msg msg)
 
     data->cardWidth2  = data->cardWidth  / minHPart;
     data->cardHeight2 = data->cardHeight / minVPart;
-
-    setPilesPos(data, 100, 100);
-
-    data->opaque = FALSE;
   }
+  GetGhostBuffers(data);
 
   closeStatus(data);
 
@@ -1790,7 +1797,9 @@ static ULONG _New(struct IClass *cl, Object *obj, struct opSet* msg)
 
   data = (struct Cardgame_Data*)INST_DATA(cl, obj);
   Init(data, obj);
-  createPiles(data, (char*)GetTagData(MUIA_Cardgame_Piles, 0, msg->ops_AttrList));
+  tmp = GetTagData(MUIA_Cardgame_Piles, 0, msg->ops_AttrList);
+  if(tmp)
+    createPiles(data, (char*)tmp);
 
   if(GetTagData(MUIA_Cardgame_TimerRunning, 0, msg->ops_AttrList))
     data->timer_blocked = 0;
@@ -1832,7 +1841,6 @@ static ULONG _Draw(struct IClass *cl, Object *obj, struct MUIP_Draw *msg)
 
   if(msg->flags & MADF_DRAWUPDATE)
   {
-
     if(data->clipping)
       cliphandle = MUI_AddClipping(muiRenderInfo(obj), _mleft(obj), _mtop(obj), 
                                                        _mwidth(obj), _mheight(obj));
@@ -1858,8 +1866,6 @@ static ULONG _Draw(struct IClass *cl, Object *obj, struct MUIP_Draw *msg)
     int allw, allh;
 
     setPilesPos(data, 100, 100);
-    //data->cardWidth2  = 1;
-    //data->cardHeight2 = 1;
     widthHeight(data, &allw, &allh);
 
     if(_width(obj) < allw || _height(obj) < allh) 
@@ -1931,6 +1937,7 @@ static ULONG _HandleInput(struct IClass* cl, Object*obj, struct MUIP_HandleInput
 
 static ULONG _Set(struct IClass* cl, Object* obj, struct opSet* msg)
 {
+  BOOL redraw = FALSE, redrawback = FALSE;
   struct Cardgame_Data* data = (struct Cardgame_Data*)INST_DATA(cl, obj);
   struct TagItem *tag, *tags = msg->ops_AttrList;
 
@@ -1967,16 +1974,39 @@ static ULONG _Set(struct IClass* cl, Object* obj, struct opSet* msg)
       break;
     case MUIA_Cardgame_Piles:
       createPiles(data, (char*)tag->ti_Data);
+      redraw = TRUE;
       break;
     case MUIA_Cardgame_RasterX:
       data->rasterpartx = tag->ti_Data;
+      redraw = TRUE;
       break;
     case MUIA_Cardgame_RasterY:
       data->rasterparty = tag->ti_Data;
+      redraw = TRUE;
       break;
     case MUIA_Cardgame_NoREKOBack:
       data->norekoback = tag->ti_Data;
+      redrawback = TRUE;
       break;
+    }
+  }
+
+  if(redraw)
+  {
+    GetGhostBuffers(data);
+    MUI_Redraw(obj, MADF_DRAWOBJECT);
+  }
+  else if(redrawback)
+  {
+    int i;
+    for(i = 0; i < data->pileSize; ++i)
+    {
+      if(data->pile[i].type >= 'A' && data->pile[i].type <= 'D')
+      {
+        data->update_mode = UPDATEPILE;
+        data->update_pile = i;
+        MUI_Redraw(obj, MADF_DRAWUPDATE);
+      }
     }
   }
 
