@@ -79,7 +79,7 @@ $(ODIR)CButton.o: $(MPATH)CButton.c $(MPATH)CButton.h $(LOCALEINC) $(MPATH)MUITo
 
 $(ODIR)CSolitaire.o: $(MPATH)CSolitaire.c $(MPATH)CSolitaire.h $(LOCALEINC) \
   $(MPATH)Cardgame.h $(MPATH)CButton.h $(MPATH)MUITools.h \
-  $(MPATH)Settings.h $(MPATH)Soliton.h
+  $(MPATH)Settings.h $(MPATH)Soliton.h $(MPATH)Support.h
 	$(CC) $(SCOPTS) $(INCPATH) $(MPATH)CSolitaire.c $(TO) $@
 
 $(ODIR)Locales.o: $(LOCALEINC)
@@ -99,7 +99,7 @@ $(ODIR)ProfileManager.o: $(MPATH)ProfileManager.c $(MPATH)ProfileManager.h \
 	$(CC) $(SCOPTS) $(INCPATH) $(MPATH)ProfileManager.c $(TO) $@
 
 $(ODIR)Settings.o: $(MPATH)Settings.c $(MPATH)Settings.h $(LOCALEINC) \
-  $(MPATH)MUITools.h $(MPATH)Soliton.h $(IPATH)IMG_Prefs.c
+  $(MPATH)MUITools.h $(MPATH)Soliton.h $(MPATH)Support.h $(IPATH)IMG_Prefs.c
 	$(CC) $(SCOPTS) $(INCPATH) $(MPATH)Settings.c $(TO) $@
 
 $(ODIR)Soliton.o: $(MPATH)Soliton.c $(MPATH)Soliton.h $(LOCALEINC) \
@@ -110,7 +110,8 @@ $(ODIR)Soliton.o: $(MPATH)Soliton.c $(MPATH)Soliton.h $(LOCALEINC) \
 
 $(ODIR)Statistics.o: $(MPATH)Statistics.c $(MPATH)Statistics.h $(LOCALEINC) \
   $(MPATH)MUITools.h $(MPATH)ProfileManager.h $(MPATH)Soliton.h \
-  $(MPATH)CSolitaire.h $(IPATH)IMG_Statistics.c $(IPATH)IMG_Winner.c
+  $(MPATH)CSolitaire.h $(IPATH)IMG_Statistics.c $(MPATH)Support.h \
+  $(IPATH)IMG_Winner.c \
 	$(CC) $(SCOPTS) $(INCPATH) $(MPATH)Statistics.c $(TO) $@
 
 $(ODIR)Support.o: $(MPATH)Support.c $(MPATH)Support.h
