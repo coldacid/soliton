@@ -605,7 +605,7 @@ static ULONG Statistics_Set(struct IClass* cl, Object* obj, struct opSet* msg)
         DoMethod(data->GR_Group, OM_REMMEMBER, data->GR_Normal);
 
         pos = xget(data->LI_Highscores, MUIA_List_Entries);
-        DoMethod(data->LI_Highscores, MUIM_List_GetEntry, pos, &s);
+        DoMethod(data->LI_Highscores, MUIM_List_GetEntry, pos-1, &s);
 
         if(!s || s->points <= data->score_game)
         {
