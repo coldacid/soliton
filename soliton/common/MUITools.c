@@ -43,16 +43,16 @@ long GetControlChar(char* label)
 
 LONG xget(Object* obj, ULONG attribute)
 { 
-  LONG x;
+  LONG x = 0;
   getatt(obj, attribute, &x);
   return x;
 }
-
+#ifndef USE_ZUNE
 ULONG DoSuperNew(struct IClass* cl, Object* obj, ULONG tag1,...)
 {
   return DoSuperMethod(cl, obj, OM_NEW, &tag1, NULL);
 }
-
+#endif
 /****************************************************************************************
   MUI-Creation"makros"
 ****************************************************************************************/
