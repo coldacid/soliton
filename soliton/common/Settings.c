@@ -27,6 +27,7 @@
 #include "Locales.h"
 #include "Settings.h"
 #include "Soliton.h"
+#include "Support.h"
 
 #include "IMG_Prefs.c"
 
@@ -330,7 +331,7 @@ DISPATCHERPROTO(NoneSlider_Dispatcher)
     }
     else
     {
-      sprintf(data->buf, "%3ld", m->value);
+      SPrintf(data->buf, "%3ld", m->value);
     }
     return (ULONG)data->buf;
   }
