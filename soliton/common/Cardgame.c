@@ -90,6 +90,7 @@ struct Cardgame_Data
   STRPTR                      cardset_name;
 
   BOOL                        rekomode;
+  BOOL			      norekoback;
   LONG                        cardWidth;
   LONG                        cardWidth2;
   LONG                        cardHeight;
@@ -260,9 +261,14 @@ static void PileUpdate(struct Pile *p, struct RastPort* rp, LONG xx, LONG yy)
 
   switch(p->type)
   {
-  case 'T':
+  /* A,B,C,D are stack spaces 1 to 4 (for REKO backcards) */
+  case 'T': case 'A' : case 'B': case 'C': case 'D':
     if(PileEmpty(p))
-      c = p->back ? 102 :  1;
+    {
+      if(p->back) c = 102;
+      else if(p->type < 'T') c = 80+p->type-'A';
+      else c = 1;
+    }
     else 
       c = p->card[p->cardSize - 1];
     drawCard(p->data, rp, c, xx, yy, 0);
@@ -397,7 +403,7 @@ static int PileCardNr(struct Pile *p, int mx, int my)
   {
     switch(p->type)
     {
-    case 'T': cnr = 1;
+    case 'A': case 'B' : case 'C' : case 'D': case 'T': cnr = 1;
       break;
     case 'V':
       cnr = (my - p->y) / p->data->cardHeight2;
@@ -531,6 +537,14 @@ static BOOL createPiles(struct Cardgame_Data *data, char* s)
         return FALSE;
       if(s[pos] == 'T')
         data->pile[i].type = 'T';
+      else if(s[pos] == 'A')
+        data->pile[i].type = 'A';
+      else if(s[pos] == 'B')
+        data->pile[i].type = 'B';
+      else if(s[pos] == 'C')
+        data->pile[i].type = 'C';
+      else if(s[pos] == 'D')
+        data->pile[i].type = 'D';
       else if(s[pos] == 'V')
         data->pile[i].type = 'V';
       else if(s[pos] == 'H')
@@ -671,6 +685,9 @@ static void drawCard(struct Cardgame_Data *data, struct RastPort *rp, int nr, in
   {
     int ix, iy;
 
+    if(nr >= 80 && nr <= 83 && (!data->rekomode || data->norekoback))
+      nr = 1;
+
     if(nr > 100) /* facedown */
     {
       ix = 13 * data->cardWidth;
@@ -680,6 +697,11 @@ static void drawCard(struct Cardgame_Data *data, struct RastPort *rp, int nr, in
     {
       ix = 13 * data->cardWidth;
       iy = data->cardHeight;
+    }
+    else if(nr >= 80)
+    {
+      ix = (13+nr-80) * data->cardWidth;
+      iy = 3*data->cardHeight;
     }
     else
     {
@@ -1785,6 +1807,7 @@ static ULONG _New(struct IClass *cl, Object *obj, struct opSet* msg)
   else
     data->rasterparty = 7;
 
+  data->norekoback = GetTagData(MUIA_Cardgame_NoREKOBack, 0, msg->ops_AttrList);
   data->animspeed = (int)GetTagData(MUIA_Cardgame_MoveSpeed, 0, msg->ops_AttrList);
 
   return (ULONG)obj;
@@ -1950,6 +1973,9 @@ static ULONG _Set(struct IClass* cl, Object* obj, struct opSet* msg)
       break;
     case MUIA_Cardgame_RasterY:
       data->rasterparty = tag->ti_Data;
+      break;
+    case MUIA_Cardgame_NoREKOBack:
+      data->norekoback = tag->ti_Data;
       break;
     }
   }

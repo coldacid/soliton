@@ -23,12 +23,14 @@
 
 extern struct MUI_CustomClass *CL_Settings;
 
+enum GameMode {GAMEMODE_KLONDIKE=0, GAMEMODE_FREECELL};
+
 #define MUIA_Settings_Settings        (TAGBASE_KAI | 0x1301) /* [..G] */
 #define MUIM_Settings_Close           (TAGBASE_KAI | 0x1302)
+#define MUIM_Settings_GameMode        (TAGBASE_KAI | 0x1303) /* [IS.] */
 
 struct MUIP_Settings_Close            {ULONG MethodID; LONG typ;};
-
-enum GameMode {GAMEMODE_KLONDIKE=0, GAMEMODE_FREECELL};
+struct MUIP_Settings_GameMode         {ULONG MethodID; enum GameMode mode;};
 
 struct Settings
 {
@@ -36,12 +38,12 @@ struct Settings
   BOOL  buttons;   /* show buttons */
   BOOL  beep;      /* display beep */
   BOOL  reqs;      /* security requesters */
+  BOOL  rekoback;  /* use reko back cards */
   ULONG anim;      /* animation speed */
 
   /* klondike options */
   ULONG open;      /* number of cards to turn */
   BOOL  block;     /* game option */
-  BOOL  opaque;    /* game option */
   BOOL  autoopen;  /* game option */
   BOOL  indicator; /* move indicator */
   BOOL  autoturn;  /* automatic turn */

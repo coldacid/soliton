@@ -297,10 +297,16 @@ static BOOL topFace(struct CSolitaire_Data *data, int p, BOOL face)
 
 static void NewGame(struct CSolitaire_Data *data)
 {
-  int cards[53], i, last;
+  int cards[53], i;
+  struct Settings * s = (struct Settings*) xget((Object*)xget(data->obj, MUIA_ApplicationObject),
+  MUIA_Soliton_Settings);
+
+  setatt(data->obj, MUIA_Cardgame_NoREKOBack, s->rekoback ? 0 : 1);
+
   if(data->gamemode == GAMEMODE_FREECELL)
   {
-    // Spielstapel füllen und mischen
+    int last;
+    /* fill cards stacks and make them random ordered */
 
     for(i = 0; i < 52; i++)
       cards[i] = i + 2;
@@ -317,18 +323,18 @@ static void NewGame(struct CSolitaire_Data *data)
       cards[z2] = tmp;
     }
 
+    last = 52;
     for(i = 0; i < 8; i++)
     {
-      DoMethod(data->obj, MUIM_Cardgame_SetCards, i, cards, 0);
+      DoMethod(data->obj, MUIM_Cardgame_SetCards, i, &cards[last], s->stack > i ? 1 : 0);
+      if(s->stack > i) --last;
     }
-
-    last = 52;
-    for(i = 8; i < 12; i++)
+    for(i = 8; i < 12-s->stack; i++)
     {
       last -= 7;
       DoMethod(data->obj, MUIM_Cardgame_SetCards, i, &cards[last], 7);
     }
-    for(i = 12; i < 16; i++)
+    for(; i < 16; i++)
     {
       last -= 6;
       DoMethod(data->obj, MUIM_Cardgame_SetCards, i, &cards[last], 6);
@@ -337,8 +343,7 @@ static void NewGame(struct CSolitaire_Data *data)
   }
   else
   {
-    // Spielstapel füllen und mischen
-
+    /* fill cards stacks and make them random ordered */
     for(i = 0; i < 52; i++)
       cards[i] = i + 102;
 
@@ -693,7 +698,7 @@ static BOOL dragStart(struct CSolitaire_Data *data, LONG source, LONG* anz)
   LONG size = *anz;
   int csize, cards[53], i;
 
-  if(!size || !source)
+  if(!size)
     return FALSE; /* Paranoia */
 
   if(data->gamemode == GAMEMODE_FREECELL)
@@ -708,8 +713,14 @@ static BOOL dragStart(struct CSolitaire_Data *data, LONG source, LONG* anz)
     for(i = csize - size + 1; i < csize; i++)
     {
       int c1 = cards[i-1], c2 = cards[i];
-
-      if(isRed(c1) == isRed(c2))
+      struct Settings * s = (struct Settings*) xget((Object*)xget(data->obj, MUIA_ApplicationObject),
+      MUIA_Soliton_Settings);
+      if(s->equalcolor)
+      {
+        if(family(c1) != family(c2))
+          return FALSE;
+      }
+      else if(isRed(c1) == isRed(c2))
         return FALSE;
       if(value(c1) != value(c2) + 1)
         return FALSE;
@@ -720,6 +731,8 @@ static BOOL dragStart(struct CSolitaire_Data *data, LONG source, LONG* anz)
   }
   else
   {
+    if(!source)
+      return FALSE;
     DoMethod(data->obj, MUIM_Cardgame_GetCards, source, cards, &csize);
     if(!csize)
       return FALSE; /* empty stack */
@@ -764,13 +777,13 @@ static BOOL dragAccept(struct CSolitaire_Data *data, int source, int dest, int s
     if(isGoalFC(dest))
     {
       if(size > 1)
-        return FALSE; // nur 1 Karte
+        return FALSE; /* only one card allowed */
       if(down == -1)
-        return (BOOL) (value(up) == 14); // nur ein As darf
+        return (BOOL) (value(up) == 14); /* only Ace allowed */
       if(family(down) != family(up))
         return FALSE;
       if(value(down) == 14)
-        return (BOOL) (value(up) == 2); // nur 2 auf As
+        return (BOOL) (value(up) == 2); /* only throw 2 ony Ace */
       if(value(down) != value(up) -1)
         return FALSE;
     }
@@ -780,7 +793,14 @@ static BOOL dragAccept(struct CSolitaire_Data *data, int source, int dest, int s
 
       if(down != -1)
       {
-        if(isRed(up) == isRed(down))
+        struct Settings * s = (struct Settings*) xget((Object*)xget(data->obj, MUIA_ApplicationObject),
+        MUIA_Soliton_Settings);
+        if(s->equalcolor)
+        {
+          if(family(up) != family(down))
+            return FALSE;
+        }
+        else if(isRed(up) == isRed(down))
           return FALSE;
         if(value(down) != value(up) + 1)
           return FALSE;
@@ -1174,67 +1194,48 @@ static BOOL clickCard(struct CSolitaire_Data * data, int p, int nr, BOOL dblclck
   return FALSE;
 }
 
-static Object * SetGameMode(struct IClass* cl, Object* obj, struct opSet* msg, enum GameMode mode, BOOL first)
+static ULONG SetGameMode(struct IClass* cl, Object* obj, enum GameMode mode)
 {
+  struct Settings *s;
   struct CSolitaire_Data * data;
-  struct TagItem ti[4];
+  struct TagItem ti[5];
   ti[0].ti_Tag = MUIA_Cardgame_RasterX;
   ti[1].ti_Tag = MUIA_Cardgame_RasterY;
   ti[2].ti_Tag = MUIA_Cardgame_Piles;
-  ti[3].ti_Tag = TAG_DONE;
+  ti[3].ti_Tag = MUIA_Cardgame_NoREKOBack;
+  ti[4].ti_Tag = TAG_DONE;
+
+  data = (struct CSolitaire_Data *) INST_DATA(cl,obj);
+  s = (struct Settings*)xget((Object*) xget(obj, MUIA_ApplicationObject), MUIA_Soliton_Settings);
+  ti[3].ti_Data = s->rekoback ? 0 : 1;
 
   switch(mode)
   {
   case GAMEMODE_FREECELL:
     ti[0].ti_Data = 16;
     ti[1].ti_Data = 2;
-    ti[2].ti_Data = (ULONG) "T,0,0,2;T,16,0,2;T,32,0,2;T,48,0,2;T,71,0,20;"
-        "T,87,0,20;T,103,0,20;T,119,0,20;V,0,2,18;V,17,2,18;V,34,2,18;"
+    ti[2].ti_Data = (ULONG) "T,0,0,2;T,16,0,2;T,32,0,2;T,48,0,2;A,71,0,20;"
+        "B,87,0,20;C,103,0,20;D,119,0,20;V,0,2,18;V,17,2,18;V,34,2,18;"
         "V,51,2,18;V,68,2,18;V,85,2,18;V,102,2,18;V,119,2,18;";
     break;
   case GAMEMODE_KLONDIKE:
     ti[0].ti_Data = 7;
     ti[1].ti_Data = 7;
-    ti[2].ti_Data = (ULONG) "T,0,0,60;H,7,0,3;T,21,0,13;T,28,0,13;T,35,0,13;"
-        "T,42,0,13;V,0,7,18;V,7,7,18;V,14,7,18;V,21,7,18;V,28,7,18;V,35,7,18;"
+    ti[2].ti_Data = (ULONG) "T,0,0,60;H,7,0,3;A,21,0,13;B,28,0,13;C,35,0,13;"
+        "D,42,0,13;V,0,7,18;V,7,7,18;V,14,7,18;V,21,7,18;V,28,7,18;V,35,7,18;"
         "V,42,7,18;";
     break;
   }
-  if(first)
-  {
-    if((obj = (Object*) DoSuperMethod(cl, obj, OM_NEW, ti, NULL)))
-    {
-      data = (struct CSolitaire_Data *) INST_DATA(cl,obj);
-      data->obj        = obj;
-      data->timer      = (Object*)GetTagData(MUIA_CSolitaire_Timer     , 0, msg->ops_AttrList);
-      data->movebutton = (Object*)GetTagData(MUIA_CSolitaire_MoveButton, 0, msg->ops_AttrList);
-      data->score      = (Object*)GetTagData(MUIA_CSolitaire_Score     , 0, msg->ops_AttrList);
-    }
-    else
-      return 0;
-  }
-  else
-  {
-    struct Settings *s;
-    Object *app;
+  SetAttrsA(obj, ti);
 
-    data = (struct CSolitaire_Data *) INST_DATA(cl,obj);
-    SetAttrsA(obj, ti);
-    if((app = (Object*) xget(obj, MUIA_ApplicationObject)))
-    {
-      if((s = (struct Settings*)xget(app, MUIA_Soliton_Settings)))
-        s->gamemode = mode;
-    }
-  }
   data->gamemode = mode;
-
   if(data->movebutton)
     setatt(data->movebutton, MUIA_CButton_Visible, FALSE);
   data->gameonline = FALSE;
   data->undohead  = NULL;
   ClearAll(&data->stats);
   data->stats.finished = TRUE;
-  return obj;
+  return (ULONG)obj;
 }
 
 /****************************************************************************************
@@ -1243,7 +1244,19 @@ static Object * SetGameMode(struct IClass* cl, Object* obj, struct opSet* msg, e
 
 static ULONG CSolitaire_New(struct IClass* cl, Object* obj, struct opSet* msg)
 {
-  return (ULONG) SetGameMode(cl, obj, msg, GAMEMODE_KLONDIKE, TRUE);
+  struct CSolitaire_Data * data;
+
+  if((obj = (Object*) DoSuperMethod(cl, obj, OM_NEW, 0, NULL)))
+  {
+    data = (struct CSolitaire_Data *) INST_DATA(cl,obj);
+    data->obj        = obj;
+    data->timer      = (Object*)GetTagData(MUIA_CSolitaire_Timer     , 0, msg->ops_AttrList);
+    data->movebutton = (Object*)GetTagData(MUIA_CSolitaire_MoveButton, 0, msg->ops_AttrList);
+    data->score      = (Object*)GetTagData(MUIA_CSolitaire_Score     , 0, msg->ops_AttrList);
+    return (ULONG) obj;
+  }
+  else
+    return 0;
 }
 
 static ULONG CSolitaire_Dispose(struct IClass* cl, Object* obj, Msg msg)
@@ -1299,8 +1312,7 @@ DISPATCHERPROTO(CSolitaire_Dispatcher)
     case MUIM_CSolitaire_Undo     : Undo(data);          return 0;
     case MUIM_CSolitaire_Sweep    : Sweep(data);         return 0;
     case MUIM_CSolitaire_Move     : Suggest(data, TRUE); return 0;
-    case MUIM_CSolitaire_Klondike : SetGameMode(cl, obj, (struct opSet *) msg, GAMEMODE_KLONDIKE, FALSE); return 0;
-    case MUIM_CSolitaire_Freecell : SetGameMode(cl, obj, (struct opSet *) msg, GAMEMODE_FREECELL, FALSE); return 0;
+    case MUIM_CSolitaire_GameMode : return SetGameMode(cl, obj, ((struct MUIP_Settings_GameMode *)msg)->mode);
   }
   return DoSuperMethodA(cl, obj, msg);
 }

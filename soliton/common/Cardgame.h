@@ -61,6 +61,7 @@ struct MUIP_Cardgame_SetEmptyImage  {ULONG ID; LONG pile;   LONG img;};
 #define MUIA_Cardgame_MoveSpeed     0x818f0043    // [ISG]
 #define MUIA_Cardgame_RasterX       0x818f0044    // [IS.]
 #define MUIA_Cardgame_RasterY       0x818f0045    // [IS.]
+#define MUIA_Cardgame_NoREKOBack    0x818f0046    // [IS.]
 
 BOOL Cardgame_Init(void);
 void Cardgame_Exit(void);

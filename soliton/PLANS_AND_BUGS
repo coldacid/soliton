@@ -1,15 +1,10 @@
 ToDo:
  - Make Freecell statistics compatible to Klondike.
  - Better statistics handling after game joining.
- - Make use of REKO backcards.
  - Auto select cardsets option (random, saved in profiles file).
    - After every x (option) games or
    - After every x (option) program start
  - Shorten path names for Loading display (or make it dynamic).
- - freecell options:
-   - Lay cards only onto equal color (heart -- heart) instead onto
-     different color
-   - Start with x (option) cards on stack.
  - last stats place is always replaced even if it was better than
    new one?
  - Add somewhat nicer default cardset handling (images for numbers and
@@ -22,4 +17,7 @@ ToDo:
  - move date generation to makefile (used in Main.c)
  - fix cases, where saved settings are ignored on loading (gamemode -->
    display gamemode with checkmark menu)
-
+   -> GameMode is not saved
+   -> Settings object is not yet informed about mode change
+   -> On loading no gamemode is selected
+   

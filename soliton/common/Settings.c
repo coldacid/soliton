@@ -35,6 +35,7 @@ struct Settings_Data
   Object *CH_Buttons;
   Object *CY_Anim;
   Object *CH_Reqs;
+  Object *CH_RekoBack;
 
   /* Klondike */
   Object *SL_Open;
@@ -95,13 +96,17 @@ static ULONG Settings_Get(struct IClass* cl, Object* obj, struct opGet* msg)
       s = &data->settings;
       s->buttons    =   (BOOL)xget(data->CH_Buttons   , MUIA_Selected     );
       s->reqs       =   (BOOL)xget(data->CH_Reqs      , MUIA_Selected     );
-      s->anim       =    (int)xget(data->CY_Anim      , MUIA_Numeric_Value );
+      s->anim       =    (int)xget(data->CY_Anim      , MUIA_Numeric_Value);
+      s->rekoback   =   (BOOL)xget(data->CH_RekoBack  , MUIA_Selected     );
 
       /* klondike */
       s->block      =   (BOOL)xget(data->CH_Block     , MUIA_Selected     );
-      s->open       =  (ULONG)xget(data->SL_Open      , MUIA_Numeric_Value );
+      s->open       =  (ULONG)xget(data->SL_Open      , MUIA_Numeric_Value);
       s->autoopen   =   (BOOL)xget(data->CH_Autoopen  , MUIA_Selected     );
       s->indicator  =   (BOOL)xget(data->CH_Indicator , MUIA_Selected     );
+
+      s->stack      =  (ULONG)xget(data->SL_Stack     , MUIA_Numeric_Value);
+      s->equalcolor =   (BOOL)xget(data->CH_EqualColor, MUIA_Selected     );
 
       *(msg->opg_Storage) = (ULONG)s;
       return TRUE;
@@ -110,7 +115,7 @@ static ULONG Settings_Get(struct IClass* cl, Object* obj, struct opGet* msg)
 }
 
 enum { ID_OPEN = 100, ID_BLOCK, ID_AUTOOPEN, ID_INDICATOR, ID_REQS, ID_ANIM, ID_BUTTONS,
-       ID_STACK, ID_EQUALCOLOR};
+       ID_STACK, ID_EQUALCOLOR, ID_REKOBACK};
 
 /****************************************************************************************
   New
@@ -164,6 +169,12 @@ static ULONG Settings_New(struct IClass* cl, Object* obj, struct opSet* msg)
           Child, MakeLabel1(MSG_SETTINGS_REQS),
           Child, HGroup,
             Child, tmp.CH_Reqs = MakeCheck(MSG_SETTINGS_REQS, FALSE, MSG_SETTINGS_REQS_HELP),
+            Child, HVSpace,
+            End,
+
+          Child, MakeLabel1(MSG_SETTINGS_REKOBACK),
+          Child, HGroup,
+            Child, tmp.CH_RekoBack = MakeCheck(MSG_SETTINGS_REKOBACK, TRUE, MSG_SETTINGS_REKOBACK_HELP),
             Child, HVSpace,
             End,
 
@@ -239,6 +250,7 @@ static ULONG Settings_New(struct IClass* cl, Object* obj, struct opSet* msg)
     setatt(tmp.CY_Anim      , MUIA_ObjectID, ID_ANIM      );
     setatt(tmp.CH_Reqs      , MUIA_ObjectID, ID_REQS      );
     setatt(tmp.CY_Anim      , MUIA_Cycle_Active, 2);
+    setatt(tmp.CH_RekoBack  , MUIA_ObjectID, ID_REKOBACK  );
 
     *((struct Settings_Data*)INST_DATA(cl, obj)) = tmp;
 
@@ -259,6 +271,10 @@ DISPATCHERPROTO(Settings_Dispatcher)
     case OM_NEW:              return(Settings_New   (cl, obj, (struct opSet *) msg));
     case OM_GET:              return(Settings_Get   (cl, obj, (struct opGet *) msg));
     case MUIM_Settings_Close: return(Settings_Close (/*cl,*/ obj, (struct MUIP_Settings_Close *) msg));
+    case MUIM_Settings_GameMode:
+      ((struct Settings_Data *) INST_DATA(cl, obj))->settings.gamemode =
+      ((struct MUIP_Settings_GameMode *)msg)->mode;
+      break;
   }
   return DoSuperMethodA(cl, obj, msg);
 }

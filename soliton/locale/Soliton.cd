@@ -310,6 +310,13 @@ MSG_SETTINGS_EQUALCOLOR_HELP (//)
 Place cards on equal colored cards\n\
 instead of red/black mixed.
 ;
+MSG_SETTINGS_REKOBACK (//)
+REKO _backcards
+;
+MSG_SETTINGS_REKOBACK_HELP (//)
+Use the 4 stack backcards\n\
+when loading a reko cardset.
+;
 ;
 ;
 ;

@@ -33,8 +33,7 @@ extern struct MUI_CustomClass *CL_CSolitaire;
 #define MUIA_CSolitaire_MoveButton  (TAGBASE_KAI | 0x2012)  /*  [I..] */
 #define MUIA_CSolitaire_Score       (TAGBASE_KAI | 0x2013)  /*  [I..] */
 
-#define MUIM_CSolitaire_Klondike    (TAGBASE_KAI | 0x2021)  /*  [I..] */
-#define MUIM_CSolitaire_Freecell    (TAGBASE_KAI | 0x2022)  /*  [I..] */
+#define MUIM_CSolitaire_GameMode    (TAGBASE_KAI | 0x2021)  /*  [IS.] */
 
 struct Stats
 {

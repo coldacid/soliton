@@ -243,8 +243,8 @@ static struct NewMenu Menu[] = {
   { NM_ITEM,  (STRPTR)MSG_MENU_SETTINGS_MUI    , 0, 0, 0, (APTR)MEN_SETMUI   },
 
   { NM_TITLE, (STRPTR)MSG_MENU_GAME            , 0, 0, 0, (APTR)0            },
-  { NM_ITEM, (STRPTR)MSG_MENU_GAME_KLONDIKE   , 0, 0, 0, (APTR)MEN_KLONDIKE },
-  { NM_ITEM, (STRPTR)MSG_MENU_GAME_FREECELL   , 0, 0, 0, (APTR)MEN_FREECELL },
+  { NM_ITEM, (STRPTR)MSG_MENU_GAME_KLONDIKE   , 0, MENUTOGGLE|CHECKIT, ~(1<<0), (APTR)MEN_KLONDIKE },
+  { NM_ITEM, (STRPTR)MSG_MENU_GAME_FREECELL   , 0, MENUTOGGLE|CHECKIT, ~(1<<1), (APTR)MEN_FREECELL },
 
   { NM_END ,  (STRPTR)NULL                     , 0, 0, 0, (APTR)0            },
 };
@@ -365,8 +365,8 @@ static ULONG _New(struct IClass* cl, Object* obj, struct opSet * msg)
     DoMethod(MenuObj(tmp.strip, MEN_STATS      ), MUIM_Notify, MUIA_Menuitem_Trigger, MUIV_EveryTime, MUIV_Notify_Application, 2, MUIM_Soliton_Statistics, FALSE);
     DoMethod(MenuObj(tmp.strip, MEN_UNDO       ), MUIM_Notify, MUIA_Menuitem_Trigger, MUIV_EveryTime, tmp.solitaire          , 1, MUIM_CSolitaire_Undo);
     DoMethod(MenuObj(tmp.strip, MEN_MANPROFILES), MUIM_Notify, MUIA_Menuitem_Trigger, MUIV_EveryTime, tmp.WI_ProfileManager  , 1, MUIM_ProfileManager_Open);
-    DoMethod(MenuObj(tmp.strip, MEN_KLONDIKE   ), MUIM_Notify, MUIA_Menuitem_Trigger, MUIV_EveryTime, tmp.solitaire          , 1, MUIM_CSolitaire_Klondike);
-    DoMethod(MenuObj(tmp.strip, MEN_FREECELL   ), MUIM_Notify, MUIA_Menuitem_Trigger, MUIV_EveryTime, tmp.solitaire          , 1, MUIM_CSolitaire_Freecell);
+    DoMethod(MenuObj(tmp.strip, MEN_KLONDIKE   ), MUIM_Notify, MUIA_Menuitem_Trigger, MUIV_EveryTime, tmp.solitaire          , 2, MUIM_CSolitaire_GameMode, GAMEMODE_KLONDIKE);
+    DoMethod(MenuObj(tmp.strip, MEN_FREECELL   ), MUIM_Notify, MUIA_Menuitem_Trigger, MUIV_EveryTime, tmp.solitaire          , 2, MUIM_CSolitaire_GameMode, GAMEMODE_FREECELL);
 
     DoMethod(obj, MUIM_Notify, MUIA_Window_Activate, MUIV_EveryTime, tmp.solitaire, 3, MUIM_Set, MUIA_Cardgame_TimerRunning, MUIV_TriggerValue);
 
