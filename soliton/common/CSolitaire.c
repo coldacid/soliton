@@ -32,6 +32,7 @@
 #include "Locales.h"
 #include "Settings.h"
 #include "Soliton.h"
+#include "Support.h"
 
 /* local structures */
 struct CSolitaire_Data;
@@ -641,10 +642,10 @@ static void DisplayStats(struct CSolitaire_Data *data)
   Object *app;
 
   s = data->stats.game_seconds;
-  sprintf(str, "%d:%02d ", s / 60, s % 60);
+  SPrintf(str, "%ld:%02d ", s / 60, s % 60);
   setatt(data->timer, MUIA_Text_Contents, str);
 
-  sprintf(str, "%d", data->stats.game_score);
+  SPrintf(str, "%ld", data->stats.game_score);
   setatt(data->score, MUIA_Text_Contents, str);
 
   if((app = (Object*) xget(data->obj, MUIA_ApplicationObject)))

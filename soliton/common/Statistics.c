@@ -33,6 +33,7 @@
 #include "ProfileManager.h" /* getlin */
 #include "Statistics.h"
 #include "Soliton.h"
+#include "Support.h"
 
 #include "IMG_Statistics.c"
 #include "IMG_Winner.c"
@@ -77,7 +78,7 @@ static void SetDate(struct Statistics_Data *data, BOOL reset)
     strftime(data->scoresdate, 20, "%Y-%m-%d", localtime(&t));
   }
 
-  sprintf(highscoretitle, GetStr(MSG_STATS_DATE), data->scoresdate);
+  SNPrintf(highscoretitle, sizeof(highscoretitle), GetStr(MSG_STATS_DATE), data->scoresdate);
   setatt(data->TX_Hightitle, MUIA_Text_Contents, highscoretitle);
 }
 
@@ -178,48 +179,51 @@ static void LoadHighscores(struct Statistics_Data *data)
 
 static void updateDisplay(struct Statistics_Data *data)
 {
-  static char str[20];
+  static char str[32];
   int s,games;
 
   // this game
-  sprintf(str, "%d", data->turn_game);
+  SPrintf(str, "%ld", data->turn_game);
   setatt(data->TX_Turns, MUIA_Text_Contents, str);
 
-  sprintf(str, "%d", data->score_game);
+  SPrintf(str, "%ld", data->score_game);
   setatt(data->TX_Score, MUIA_Text_Contents, str);
 
-  s = data->time_game;
-  sprintf(str, "%d:%02d min", s / 60, s % 60);
+	/* TODO: Use locale */
+	s = data->time_game;
+  SPrintf(str, "%ld:%02ld min", s / 60, s % 60);
   setatt(data->TX_Time, MUIA_Text_Contents, str);
 
   // this session
   games = data->lost_session + data->won_session;
-  sprintf(str, "%.0f %%", (games ? ((double)data->won_session / (double)games)*100.0 : 0.0));
+  if (!games) games = 1;
+	SPrintf(str, "%ld %%", data->won_session * 100 / games);
   setatt(data->TX_Quote_Session, MUIA_Text_Contents, str);
 
-  sprintf(str, "%d", data->won_session);
+  SPrintf(str, "%ld", data->won_session);
   setatt(data->TX_Wins_Session, MUIA_Text_Contents, str);
 
-  sprintf(str, "%d", data->lost_session);
+  SPrintf(str, "%ld", data->lost_session);
   setatt(data->TX_Losses_Session, MUIA_Text_Contents, str);
 
+	/* TODO: Use locale */
   s = data->time_session;
-  sprintf(str, "%d:%02d h", s / 3600, (s % 3600) / 60);
+  SPrintf(str, "%ld:%02ld h", s / 3600, (s % 3600) / 60);
   setatt(data->TX_Time_Session, MUIA_Text_Contents, str);
 
   // all session
   games += data->lost_all + data->won_all;
-  sprintf(str, "%.0f %%", (games ? ((double)(data->won_session + data->won_all) / (double)games)*100.0 : 0.0));
+  SPrintf(str, "%ld %%", (data->won_session + data->won_all) * 100 / games);
   setatt(data->TX_Quote_All, MUIA_Text_Contents, str);
 
-  sprintf(str, "%d", data->won_session + data->won_all);
+  SPrintf(str, "%ld", data->won_session + data->won_all);
   setatt(data->TX_Wins_All, MUIA_Text_Contents, str);
 
-  sprintf(str, "%d", data->lost_session + data->lost_all);
+  SPrintf(str, "%ld", data->lost_session + data->lost_all);
   setatt(data->TX_Losses_All, MUIA_Text_Contents, str);
 
   s = data->time_session + data->time_all;
-  sprintf(str, "%d:%02d h", s / 3600, (s % 3600) / 60);
+  SPrintf(str, "%ld:%02ld h", s / 3600, (s % 3600) / 60);
   setatt(data->TX_Time_All, MUIA_Text_Contents, str);
 }
 
@@ -274,8 +278,8 @@ LONG Highscore_DisplayFunc(struct Hook *hook, char** array, struct Score* entry)
   static char buf4[25];
   if(entry)
   {
-    sprintf(buf1, "%ld", entry->points);
-    sprintf(buf3, "%ld:%02ld min", entry->time/60, entry->time % 60);
+    SPrintf(buf1, "%ld", entry->points);
+    SPrintf(buf3, "%ld:%02ld min", entry->time/60, entry->time % 60);
     *array++ = entry->name;
     *array++ = buf1;
     *array++ = buf3;
@@ -283,13 +287,13 @@ LONG Highscore_DisplayFunc(struct Hook *hook, char** array, struct Score* entry)
   }
   else /* title */
   {
-    sprintf(buf1  , "\033c\033b%s", GetStr(MSG_STATS_LNAME));
+    SNPrintf(buf1  , sizeof(buf1), "\033c\033b%s", GetStr(MSG_STATS_LNAME));
     *array++ = buf1;
-    sprintf(buf2  , "\033c\033b%s", GetStr(MSG_STATS_LSCORE));
+    SNPrintf(buf2  , sizeof(buf2), "\033c\033b%s", GetStr(MSG_STATS_LSCORE));
     *array++ = buf2;
-    sprintf(buf3  , "\033c\033b%s", GetStr(MSG_STATS_TIME));
+    SNPrintf(buf3  , sizeof(buf3), "\033c\033b%s", GetStr(MSG_STATS_TIME));
     *array++ = buf3;
-    sprintf(buf4  , "\033c\033b%s", GetStr(MSG_STATS_LDATE));
+    SNPrintf(buf4  , sizeof(buf4), "\033c\033b%s", GetStr(MSG_STATS_LDATE));
     *array = buf4;
   }
   return 0;
