@@ -36,6 +36,8 @@
 #include "Soliton.h"
 #include "Settings.h"
 
+#include "Soliton_rev.h"
+
 #define USE_IMG_CNEW1_COLORS
 #include "IMG_CNew1.c"
 static struct InternalImage iNew1 = {
@@ -271,6 +273,8 @@ static struct NewMenu Menu[] = {
 
 static ULONG _New(struct IClass* cl, Object* obj, struct opSet * msg)
 {
+  static char title[40];
+
   Object *BT_New;
   Object *BT_Sweep;
   Object *TX_Score;
@@ -279,6 +283,8 @@ static ULONG _New(struct IClass* cl, Object* obj, struct opSet * msg)
   Object *TX_Timer;
   struct BoardWindow_Data tmp;
   struct NewMenu *nm;
+
+  SNPrintf(title,sizeof(title),"%s %ld.%ld", APPNAME, VERSION, REVISION);
 
   for(nm = Menu; nm->nm_Type != NM_END; ++nm)
   {
@@ -313,7 +319,7 @@ static ULONG _New(struct IClass* cl, Object* obj, struct opSet * msg)
 
 
   obj = (Object*)DoSuperNew(cl, obj,
-    MUIA_Window_Title    , APPNAME,
+    MUIA_Window_Title    , title,
     MUIA_Window_ID       , MAKE_ID('S','K','M','W'),
     MUIA_HelpNode        , "MAINWINDOW",
     MUIA_Window_Menustrip, tmp.strip,
