@@ -69,7 +69,7 @@ $(ODIR)BoardWindow.o: $(MPATH)BoardWindow.c $(MPATH)BoardWindow.h $(LOCALEINC) \
   $(MPATH)ProfileManager.h $(MPATH)Soliton.h $(MPATH)Settings.h \
   $(MPATH)CSolitaire.h $(IPATH)IMG_CNew1.c $(IPATH)IMG_CNew2.c $(IPATH)IMG_CUndo1.c \
   $(IPATH)IMG_CUndo2.c $(IPATH)IMG_CStats1.c $(IPATH)IMG_CStats2.c $(IPATH)IMG_CSweep1.c \
-  $(IPATH)IMG_CSweep2.c $(IPATH)IMG_CMove1.c $(IPATH)IMG_CMove2.c
+  $(IPATH)IMG_CSweep2.c $(IPATH)IMG_CMove1.c $(IPATH)IMG_CMove2.c $(MPATH)Soliton_rev.h
 	$(CC) $(SCOPTS) $(INCPATH) $(MPATH)BoardWindow.c $(TO) $@
 
 $(ODIR)Cardgame.o: $(MPATH)Cardgame.c $(MPATH)Cardgame.h $(LOCALEINC) $(MPATH)MUITools.h \
