@@ -143,6 +143,8 @@ static ULONG Soliton_New(struct IClass* cl, Object* obj, struct opSet* msg)
 
   if(obj) 
   {
+    *((struct Soliton_Data*)INST_DATA(cl, obj)) = tmp;
+
     DoMethod(tmp.WI_ProfileManager, MUIM_ProfileManager_LoadProfiles);
 
     DoMethod(obj, MUIM_Application_Load, MUIV_Application_Load_ENVARC);
@@ -151,8 +153,6 @@ static ULONG Soliton_New(struct IClass* cl, Object* obj, struct opSet* msg)
     setatt(obj, MUIA_Soliton_Settings, xget(tmp.WI_Settings, MUIA_Settings_Settings)); 
 
     setatt(tmp.WI_Main, MUIA_Window_Open, TRUE);
-
-    *((struct Soliton_Data*)INST_DATA(cl, obj)) = tmp;
 
     if(!xget(tmp.WI_Main, MUIA_Window_Open))
     {
