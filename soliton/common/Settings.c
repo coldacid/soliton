@@ -114,9 +114,6 @@ static ULONG Settings_Get(struct IClass* cl, Object* obj, struct opGet* msg)
   return DoSuperMethodA(cl, obj, (Msg)msg);
 }
 
-enum { ID_OPEN = 100, ID_BLOCK, ID_AUTOOPEN, ID_INDICATOR, ID_REQS, ID_ANIM, ID_BUTTONS,
-       ID_STACK, ID_EQUALCOLOR, ID_REKOBACK};
-
 /****************************************************************************************
   New
 ****************************************************************************************/

@@ -353,28 +353,30 @@ static void PileDraw(struct Pile *p, struct RastPort *rp, LONG x, LONG y)
   PileUpdate(p, rp, x, y);
 }
 
-static int PileWidth(struct Pile *p, BOOL max)
+static int PileWidth(struct Pile *p, BOOL max, BOOL max2)
 {
   if(p->type == 'H')
   {
-    LONG s;
+    LONG s, t;
 
     if((s = max ? p->maxSize : p->cardSize) < 0)
       s = 0;
-    return p->data->cardWidth + (s - 1) * p->data->cardWidth2;
+    t = max2 ? p->data->cardWidth / minHPart : p->data->cardWidth2;
+    return p->data->cardWidth + (s - 1) * t;
   }
   return p->data->cardWidth;
 }
 
-static int PileHeight(struct Pile *p, BOOL max)
+static int PileHeight(struct Pile *p, BOOL max, BOOL max2)
 {
   if(p->type == 'V')
   {
-    LONG s;
+    LONG s,t;
 
     if((s = max ? p->maxSize : p->cardSize) < 0)
       s = 0;
-    return p->data->cardHeight + (s - 1) * p->data->cardHeight2;
+    t = max2 ? p->data->cardHeight / minVPart : p->data->cardHeight2;
+    return p->data->cardHeight + (s - 1) * t;
   }
   return p->data->cardHeight;
 }
@@ -397,8 +399,8 @@ static int PileCardNr(struct Pile *p, int mx, int my)
 {
   int cnr = -1;
 
-  if(mx >= p->x && mx < p->x + PileWidth(p, FALSE) &&
-  my >= p->y && my < p->y + PileHeight(p, FALSE))
+  if(mx >= p->x && mx < p->x + PileWidth(p, FALSE,FALSE) &&
+  my >= p->y && my < p->y + PileHeight(p, FALSE,FALSE))
   {
     switch(p->type)
     {
@@ -587,10 +589,10 @@ static void widthHeight(struct Cardgame_Data *data, int *allw, int *allh)
   {
     struct Pile *p = &data->pile[i];
 
-    j = PileWidth(p, TRUE) + p->x;
+    j = PileWidth(p, TRUE,FALSE) + p->x;
     if(j > *allw)
       *allw = j;
-    j = PileHeight(p, TRUE) + p->y;
+    j = PileHeight(p, TRUE,FALSE) + p->y;
     if(j > *allh)
       *allh = j;
   }
@@ -1107,15 +1109,16 @@ static void dragInit(struct Cardgame_Data *data, int from, int size)
   data->dragpile->y    = PileMergeY(f);
   data->dragpile->type = f->type;
 
-  data->ghostW = PileWidth(data->dragpile, FALSE);
-  data->ghostH = PileHeight(data->dragpile, FALSE);
+  data->ghostW = PileWidth(data->dragpile, FALSE,FALSE);
+  data->ghostH = PileHeight(data->dragpile, FALSE,FALSE);
 
   /* background into buffer */
   if(data->opaque)
   {
     data->ghostX = data->dragpile->x;
     data->ghostY = data->dragpile->y;
-    if(PileWidth(f, TRUE) > data->ghostBuffer->width || PileHeight(f, TRUE) > data->ghostBuffer->height)
+    if(PileWidth(f, TRUE,FALSE) > data->ghostBuffer->width ||
+    PileHeight(f, TRUE,FALSE) > data->ghostBuffer->height)
     {
       /* swap buffers */
       struct Buffer* b;
@@ -1574,8 +1577,8 @@ static void GetGhostBuffers(struct Cardgame_Data *data)
       struct Pile *p = data->pile+i;
       int pw, ph;
 
-      pw = PileWidth(p, TRUE) + 1;
-      ph = PileHeight(p, TRUE) + 1;
+      pw = PileWidth(p, TRUE, TRUE) + 1;
+      ph = PileHeight(p, TRUE, TRUE) + 1;
 
       if(pw > w) w = pw;
       if(ph > h) h = ph;

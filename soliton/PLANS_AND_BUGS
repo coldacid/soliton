@@ -15,6 +15,5 @@ ToDo:
    -> GameMode is not saved
    -> Settings object is not yet informed about mode change
    -> On loading no gamemode is selected
- - Fix Freecell-Cleanup handling
  - Add Freecell move button support
 

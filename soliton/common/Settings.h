@@ -23,6 +23,12 @@
 
 extern struct MUI_CustomClass *CL_Settings;
 
+enum SettingsID { ID_OPEN = 100, ID_BLOCK, ID_AUTOOPEN, ID_INDICATOR, ID_REQS,
+  ID_ANIM, ID_BUTTONS, ID_STACK, ID_EQUALCOLOR, ID_REKOBACK,
+
+  ID_MENU_KLONDIKE = 300, ID_MENU_FREECELL,
+};
+
 enum GameMode {GAMEMODE_KLONDIKE=0, GAMEMODE_FREECELL};
 
 #define MUIA_Settings_Settings        (TAGBASE_KAI | 0x1301) /* [..G] */

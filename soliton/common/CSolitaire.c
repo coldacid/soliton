@@ -495,31 +495,63 @@ static void Sweep(struct CSolitaire_Data *data)
 {
   BOOL sweep;
   int dest, source;
-  do
+
+  if(data->gamemode == GAMEMODE_FREECELL)
   {
-    sweep = FALSE;
-    for(dest = 2; dest <= 5; dest++)
+    do
     {
-      for(source = 1; source <= 12; source++)
+      sweep = FALSE;
+      for(dest = 4; dest <= 7; dest++)
       {
-        if(source == 1 || source >= 6)
+        for(source = 0; source <= 15; source++)
         {
-          if(tryMove(data, source, dest, 1, TRUE))
+          if(source <= 3 || source >= 8)
           {
-            if(xget(data->obj, MUIA_Cardgame_TimerRunning)) // Nicht etwa neues Spiel?
+            if(tryMove(data, source, dest, 1, TRUE))
             {
-              sweep = TRUE;
-              break;
-            }
-            else  // bei neuem Spiel nicht sofort wieder sweepen
-            {
-              return;
+              if(xget(data->obj, MUIA_Cardgame_TimerRunning)) // Nicht etwa neues Spiel?
+              {
+                sweep = TRUE;
+                break;
+              }
+              else  // bei neuem Spiel nicht sofort wieder sweepen
+              {
+                return;
+              }
             }
           }
         }
       }
-    }
-  } while(sweep);
+    } while(sweep);
+  }
+  else
+  {
+    do
+    {
+      sweep = FALSE;
+      for(dest = 2; dest <= 5; dest++)
+      {
+        for(source = 1; source <= 12; source++)
+        {
+          if(source == 1 || source >= 6)
+          {
+            if(tryMove(data, source, dest, 1, TRUE))
+            {
+              if(xget(data->obj, MUIA_Cardgame_TimerRunning)) // Nicht etwa neues Spiel?
+              {
+                sweep = TRUE;
+                break;
+              }
+              else  // bei neuem Spiel nicht sofort wieder sweepen
+              {
+                return;
+              }
+            }
+          }
+        }
+      }
+    } while(sweep);
+  }
 }
 
 /****************************************************************************************
