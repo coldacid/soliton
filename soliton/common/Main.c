@@ -66,60 +66,13 @@ struct UtilityBase *UtilityBase = NULL;
 struct IntuitionBase *IntuitionBase = NULL;
 struct GfxBase *GfxBase = NULL;
 
-
-
-#if !defined(_AROS) && defined(USE_ZUNE)
-
-/* On AmigaOS we build a fake library base, because it's not compiled as sharedlibrary yet
- * this is also useful for debugging Zune */
-
-#include "muimaster_intern.h"
-
-int openmuimaster(void)
-{
-    static struct MUIMasterBase_intern MUIMasterBase_instance;
-    MUIMasterBase = (struct Library*)&MUIMasterBase_instance;
-
-    MUIMasterBase_instance.sysbase = *((struct ExecBase **)4);
-    MUIMasterBase_instance.dosbase = (APTR)OpenLibrary("dos.library",37);
-    MUIMasterBase_instance.utilitybase = (APTR)OpenLibrary("utility.library",37);
-    MUIMasterBase_instance.aslbase = OpenLibrary("asl.library",37);
-    MUIMasterBase_instance.gfxbase = (APTR)OpenLibrary("graphics.library",37);
-    MUIMasterBase_instance.layersbase = OpenLibrary("layers.library",37);
-    MUIMasterBase_instance.intuibase = (APTR)OpenLibrary("intuition.library",37);
-    MUIMasterBase_instance.cxbase = OpenLibrary("commodities.library",37);
-    MUIMasterBase_instance.keymapbase = OpenLibrary("keymap.library",37);
-    MUIMasterBase_instance.gadtoolsbase = OpenLibrary("gadtools.library",37);
-    MUIMasterBase_instance.iffparsebase = OpenLibrary("iffparse.library",37);
-    MUIMasterBase_instance.diskfontbase = OpenLibrary("diskfont.library",37);
-    InitSemaphore(&MUIMasterBase_instance.ZuneSemaphore);
-
-    return 1;
-}
-
-void closemuimaster(void)
-{
-}
-
-#undef SysBase
-#undef IntuitionBase
-#undef GfxBase
-#undef LayersBase
-#undef UtilityBase
-
-#endif
-
 static BOOL InitAll(void)
 {
   InitLocale();
 
   if((IntuitionBase = (struct IntuitionBase *) OpenLibrary("intuition.library", 38)))
   {
-#if defined(USE_ZUNE) && !defined(_AROS)
-    if (openmuimaster())
-#else
     if((MUIMasterBase = OpenLibrary(MUIMASTER_NAME, 17)))
-#endif
     {
       if((UtilityBase = (struct UtilityBase *) OpenLibrary("utility.library", 38)))
       {
@@ -185,12 +138,8 @@ static void ExitAll(void)
     CloseLibrary(DataTypesBase);
   if(UtilityBase)
     CloseLibrary((struct Library *) UtilityBase);
-#if defined(USE_ZUNE) && !defined(_AROS)
-  closemuimaster();
-#else
   if(MUIMasterBase)
     CloseLibrary(MUIMasterBase);
-#endif
   if(IntuitionBase)
     CloseLibrary((struct Library *) IntuitionBase);
 
