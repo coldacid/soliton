@@ -1659,8 +1659,8 @@ struct Screen *scr, BOOL unpack)
   else if(unpack)
   {
 #ifdef HAVE_XADMASTER_H
-    if((xadMasterBase = (struct xadMasterBase *)
-    OpenLibrary("xadmaster.library", 9)))
+    struct Library *xadMasterBase;
+    if((xadMasterBase = OpenLibrary("xadmaster.library", 9)))
     {
       struct xadArchiveInfo *ai;
       if((ai = xadAllocObjectA(XADOBJ_ARCHIVEINFO, 0)))
