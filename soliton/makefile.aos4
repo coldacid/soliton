@@ -1,0 +1,109 @@
+# Soliton cardgames for Amiga computers
+# Copyright (C) 1997-2001 Kai Nickel and other authors
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+# If Kickstart isn't defined, we don't run on AmigaOS but on a
+# foreign OS
+ifndef Kickstart
+
+CROSS_COMPILE = ppc-amigaos-
+RM     = rm -R
+MKDIR  = mkdir -p
+
+else
+
+RM = delete all
+MKDIR = makedir
+DATE =
+endif
+
+# Uncomment the next line if you are cross compiling
+
+CC     = $(CROSS_COMPILE)gcc
+CXX    = $(CROSS_COMPILE)c++
+AS     = $(CROSS_COMPILE)as
+LD     = $(CROSS_COMPILE)ld
+RANLIB = $(CROSS_COMPILE)ranlib
+STRIP  = $(CROSS_COMPILE)strip
+
+# Change these as required
+OPTIMIZE = -O3
+DEBUG = -g #-ggdb # -g -DDEBUG
+INC = -Icommon -Iimages -I "$(MUI_INCLUDE)"
+CFLAGS = -Wall -fno-strict-aliasing $(OPTIMIZE) $(DEBUG) $(INC) -D__USE_INLINE__
+
+# Flags passed to gcc during linking
+LINK =
+
+# Name of the "thing" to build
+TARGET = Soliton
+
+# Additional linker libraries
+LIBS = -ldebug
+
+# Version of the binary to build
+VERSION = 0
+
+# Source code files used in this project
+
+COMMONSRCS=\
+	About.c \
+	BoardWindow.c \
+	Cardgame.c \
+	CButton.c \
+	CSolitaire.c \
+	Locales.c \
+	Main.c \
+	MUITools.c \
+	ProfileManager.c \
+	Settings.c \
+	Soliton.c \
+	Statistics.c
+
+SRCS = $(addprefix common/,$(COMMONSRCS))
+
+# -------------------------------------------------------------
+
+OBJS = $(SRCS:%.c=ppc-amigaos-objs/%.o)
+AOBJS = $(ASRCS:%.S=ppc-amigaos-objs/%.o)
+
+all: envs dirs $(TARGET)
+
+.PHONY: envs
+envs:
+ifndef AMISSL_INCLUDE
+	$(error Please create a MUI_INCLUDE environment variable)
+endif
+
+.PHONY: dirs
+dirs:
+	-$(MKDIR) ppc-amigaos-objs ppc-amigaos-objs/common
+
+# Rules for building
+$(TARGET): $(OBJS) $(AOBJS)
+	$(CC) $(LINK) -o $@.debug $(OBJS) $(AOBJS) $(LIBS) -Wl,--cref,-M,-Map=$@.map
+	$(STRIP) --strip-all -o $@ $@.debug
+
+ppc-amigaos-objs/common/%.o: common/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+.PHONY: clean
+clean:
+	$(RM) $(TARGET) $(OBJS) ppc-amigaos-objs
+
+.PHONY: revision
+revision:
+	bumprev $(VERSION) $(TARGET)
