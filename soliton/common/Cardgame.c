@@ -297,8 +297,8 @@ static void PileUpdate(struct Pile *p, struct RastPort* rp, LONG xx, LONG yy)
     {
       drawBackground(p->data, rp, xx, yy, p->data->cardWidth,
         (p->old_cardSize - p->cardSize) * p->data->cardHeight2,
-        (p->x + xx-xxstart) % p->data->pattern_width,
-        (p->y + yy-yystart) % p->data->pattern_height);
+        p->data->pattern?((p->x + xx-xxstart) % p->data->pattern_width):0,
+        p->data->pattern?((p->y + yy-yystart) % p->data->pattern_height):0);
     }
     p->old_cardSize = p->cardSize;
     break;
@@ -334,8 +334,8 @@ static void PileUpdate(struct Pile *p, struct RastPort* rp, LONG xx, LONG yy)
       drawBackground(p->data, rp, xx, yy,
       (p->old_cardSize - p->cardSize) * p->data->cardWidth2,
       p->data->cardHeight,
-      (p->x + xx-xxstart) % p->data->pattern_width,
-      (p->y + yy-yystart) % p->data->pattern_height);
+      p->data->pattern?((p->x + xx-xxstart) % p->data->pattern_width):0,
+      p->data->pattern?((p->y + yy-yystart) % p->data->pattern_height):0);
     }
     p->old_cardSize = p->cardSize;
     break;
