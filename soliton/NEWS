@@ -14,7 +14,7 @@ WHAT'S CHANGED FROM 2.00 to 2.1
  * Joined both Soliton games completely.
  * Now detects REKO-cardsets automatically (by size) and needs no
    longer the SOLITON keyword for reko.datatype.
- * Fixed crash when double clicking on klodike stack card before
+ * Fixed crash when double clicking on klondike stack card before
    clicking new button.
 
 WHAT'S CHANGED FROM 1.71 to 2.00 (1999-03-06)
