@@ -30,6 +30,8 @@
 #include "Soliton.h"
 #include "Statistics.h"
 
+#include "Soliton_rev.h"
+
 struct Soliton_Data
 {
   Object *WI_Main, *WI_Settings, *WI_About, *WI_Statistics, *WI_ProfileManager;
@@ -114,7 +116,7 @@ static ULONG Soliton_New(struct IClass* cl, Object* obj, struct opSet* msg)
 
   obj = (Object*)DoSuperNew(cl, obj,
     MUIA_Application_Title      , APPNAME,
-    MUIA_Application_Version    , VERSION_STRING,
+    MUIA_Application_Version    , &VERSTAG[1],
     MUIA_Application_Copyright  , "GPL",
     MUIA_Application_Author     , "Kai Nickel",
     MUIA_Application_Description, GetStr(MSG_APPDESCRIPTION),

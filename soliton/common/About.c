@@ -28,6 +28,8 @@
 #define USE_IMG_ABOUT_COLORS
 #include "IMG_About.c"
 
+#include "Soliton_rev.h"
+
 /****************************************************************************************
   AboutMUI
 ****************************************************************************************/
@@ -53,8 +55,10 @@ static ULONG About_New(struct IClass* cl, Object* obj, struct opSet* msg)
 {
   Object *BT_Ok, *BT_MUI;
   char *text;
+  char version_buf[40];
 
-  sprintf(version_text, GetStr(MSG_ABOUT_VERSION), VERSION_NUMBER, VERSION_DATE);
+	sprintf(version_buf, "%d.%d", VERSION, REVISION);
+  snprintf(version_text, sizeof(version_text),GetStr(MSG_ABOUT_VERSION), version_buf, DATE);
   text = GetStr(MSG_ABOUT);
 
   obj = (Object*)DoSuperNew(cl, obj,
@@ -62,11 +66,6 @@ static ULONG About_New(struct IClass* cl, Object* obj, struct opSet* msg)
     MUIA_Window_Title      , APPNAME,
     MUIA_Window_LeftEdge   , MUIV_Window_LeftEdge_Centered,
     MUIA_Window_TopEdge    , MUIV_Window_TopEdge_Centered,
-//    MUIA_Window_CloseGadget, FALSE,
-//    MUIA_Window_DepthGadget, FALSE,
-//    MUIA_Window_SizeGadget , FALSE,
-//    MUIA_Window_DragBar    , FALSE,
-//    MUIA_Window_Borderless , TRUE,
 
     WindowContents, 
 

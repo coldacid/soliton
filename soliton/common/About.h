@@ -28,9 +28,6 @@ extern struct MUI_CustomClass *CL_About;
 BOOL About_Init(void);
 void About_Exit(void);
 
-extern char* VERSION_STRING;
-extern char* VERSION_NUMBER;
-extern char* VERSION_DATE;
 extern char* APPNAME;
 extern char* APPCOPYRIGHT;
 

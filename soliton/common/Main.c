@@ -42,6 +42,7 @@
 #include "Soliton.h"
 #include "Statistics.h"
 
+#include "SDI_compiler.h"
 #include "SDI_iface.h"
 
 #if defined(__MORPHOS__)
@@ -52,10 +53,7 @@ __near LONG __stack = 20000;
 LONG _stack = 20000;
 #endif
 
-char *VERSION_STRING = "$VER: Soliton 2.1 (28.04.2002)",
-     *VERSION_NUMBER = "2.1",
-     *VERSION_DATE   = "2002-04-28",
-     *APPNAME        = "Soliton";
+char *APPNAME = "Soliton";
 
 /****************************************************************************************
   Init- / ExitLibs
