@@ -308,9 +308,9 @@ LONG Highscore_DestructFunc(struct Hook *hook, Object *obj, struct Score* entry)
   return 0;
 }
 
-MakeHook(DispHook,Highscore_DisplayFunc);
-MakeHook(CompHook,Highscore_CompareFunc);
-MakeHook(DestHook,Highscore_DestructFunc);
+MakeStaticHook(DispHook,Highscore_DisplayFunc);
+MakeStaticHook(CompHook,Highscore_CompareFunc);
+MakeStaticHook(DestHook,Highscore_DestructFunc);
 
 /****************************************************************************************
   New / Dispose

@@ -244,8 +244,8 @@ HOOKPROTONHNO(DestructFunc, LONG, struct Profil* entry)
   return 0;
 }
 
-MakeHook(DispHook,DisplayFunc);
-MakeHook(DestructHook,DestructFunc);
+MakeStaticHook(DispHook,DisplayFunc);
+MakeStaticHook(DestructHook,DestructFunc);
 
 /****************************************************************************************
   Add / Rem / Redefine / Select
