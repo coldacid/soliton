@@ -4,16 +4,33 @@ ToDo:
  - Auto select cardsets option (random, saved in profiles file).
    - After every x (option) games or
    - After every x (option) program start
- - last stats place is always replaced even if it was better than
-   new one?
  - Add somewhat nicer default cardset handling (images for numbers and
    signs internally)
  - get updated locale files and docs
  - move date generation to makefile (used in Main.c)
- - fix cases, where saved settings are ignored on loading (gamemode -->
-   display gamemode with checkmark menu)
-   -> GameMode is not saved
-   -> Settings object is not yet informed about mode change
-   -> On loading no gamemode is selected
  - Add Freecell move button support
+ - Do not add game to stats, when the settings were changed inbetween.
+ - Add the game settings to score field.
+ - cool buttons alternatively in footer and not left
+ - Freecell game mode with 10 stacks (own gamemode)
+   - This is really necessary with EqualColors option.
+ - Including other solitaire game modes.
+
+CSolitaire.c:
+ - Split file into modules for every game, unify interface for different
+   games (make more games addition really easy)
+ - Extracting Operations into own module including undo-Handling:
+
+enum UndoType {UNDOTYPE_UNCOVER, UNDOTYPE_MOVE, UNDOTYPE_UNCOVERMOVE};
+
+struct UndoNode
+{
+  struct UndoNode *next;        /* pointer to next element */
+  enum UndoType    type;        /* the type of operation */
+  int              from;        /* source stack of move */
+  int              to;          /* destination move stack */
+  int              num;         /* number of transfered cards */
+};
+
+ - A special handling for source stack of klondike is needed.
 

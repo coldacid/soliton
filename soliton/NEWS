@@ -2,7 +2,8 @@
 WHAT'S CHANGED FROM 2.00 to 2.1
 
  * Now it is GPL and thus freely distributable and usable.
- * Development done using Soliton project at http://www.sourceforge.net/
+ * Development done using Soliton project at
+   http://www.sourceforge.net/projects/soliton/
  * Implemented much more localisation stuff.
  * Changed highscore and profile data formats.
  * Migrated code from C++ to plain C code and shortened
@@ -19,6 +20,7 @@ WHAT'S CHANGED FROM 2.00 to 2.1
  * When XAD system is installed, the cardsets maybe archived in
    any supported archive type (if there are multiple files in the
    archive, the largest one is taken).
+ * Fixed statistics overwrite bug.
 
 WHAT'S CHANGED FROM 1.71 to 2.00 (1999-03-06)
  * Freecell game mode. Soliton now consists of 2 programs:
