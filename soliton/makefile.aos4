@@ -71,7 +71,8 @@ COMMONSRCS=\
 	ProfileManager.c \
 	Settings.c \
 	Soliton.c \
-	Statistics.c
+	Statistics.c \
+	Support.c
 
 SRCS = $(addprefix common/,$(COMMONSRCS))
 

@@ -59,7 +59,7 @@ $(ODIR)Soliton: $(OBJ)
 	$(CC) $(SCOPTS) $(LINK) $(OBJ) $(LTO) $@
 
 $(ODIR)About.o: $(MPATH)About.c $(MPATH)About.h $(LOCALEINC) \
-  $(MPATH)MUITools.h $(IPATH)IMG_About.c $(MPATH)Soliton_rev.h 
+  $(MPATH)MUITools.h $(IPATH)IMG_About.c $(MPATH)Soliton_rev.h $(MPATH)Support.h
 	$(CC) $(SCOPTS) $(INCPATH) $(MPATH)About.c $(TO) $@
 
 $(ODIR)BoardWindow.o: $(MPATH)BoardWindow.c $(MPATH)BoardWindow.h $(LOCALEINC) \
@@ -112,6 +112,9 @@ $(ODIR)Statistics.o: $(MPATH)Statistics.c $(MPATH)Statistics.h $(LOCALEINC) \
   $(MPATH)MUITools.h $(MPATH)ProfileManager.h $(MPATH)Soliton.h \
   $(MPATH)CSolitaire.h $(IPATH)IMG_Statistics.c $(IPATH)IMG_Winner.c
 	$(CC) $(SCOPTS) $(INCPATH) $(MPATH)Statistics.c $(TO) $@
+
+$(ODIR)Support.o: $(MPATH)Support.c $(MPATH)Support.h
+	$(CC) $(SCOPTS) $(INCPATH) $(MPATH)Support.c $(TO) $@
 
 #### Locale ####
 
