@@ -41,7 +41,7 @@ STRIP  = $(CROSS_COMPILE)strip
 
 # Change these as required
 OPTIMIZE = -O3
-DEBUG = -g #-ggdb # -g -DDEBUG
+DEBUG = #-ggdb # -g -DDEBUG
 INC = -Icommon -Iimages -I "$(MUI_INCLUDE)"
 CFLAGS = -Wall -fno-strict-aliasing $(OPTIMIZE) $(DEBUG) $(INC) -D__USE_INLINE__ -DFlush=FFlush
 
@@ -55,7 +55,7 @@ TARGET = Soliton
 LIBS = -ldebug
 
 # Version of the binary to build
-VERSION = 0
+VERSION = 2
 
 # Source code files used in this project
 
@@ -106,4 +106,4 @@ clean:
 
 .PHONY: revision
 revision:
-	bumprev $(VERSION) $(TARGET)
+	bumprev $(VERSION) common/$(TARGET)
