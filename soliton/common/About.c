@@ -49,11 +49,12 @@ static ULONG About_AboutMUI(/*struct IClass* cl,*/ Object* obj/*, Msg msg*/)
 /****************************************************************************************
   New
 ****************************************************************************************/
-static char version_text[50];
-
 static ULONG About_New(struct IClass* cl, Object* obj, struct opSet* msg)
 {
+  static char version_text[50];
+
   Object *BT_Ok, *BT_MUI;
+
   char *text;
   char version_buf[40];
 
