@@ -4,8 +4,8 @@
 /* Includeheader
 
         Name:           SDI_compiler.h
-        Versionstring:  $VER: SDI_compiler.h 1.10 (18.10.2002)
-        Author:         SDI
+        Versionstring:  $VER: SDI_compiler.h 1.18 (04.07.2004)
+        Author:         SDI & Jens Langner
         Distribution:   PD
         Description:    defines to hide compiler stuff
 
@@ -16,10 +16,23 @@
  1.5   29.07.00 : added #undef statements (needed e.g. for AmiTCP together
         with vbcc)
  1.6   19.05.01 : added STACKEXT and Dice stuff
- 1.7   16.06.02 : added MorphOS specials and VARARGS68K
+ 1.7   16.06.01 : added MorphOS specials and VARARGS68K
  1.8   21.09.02 : added MorphOS register stuff
  1.9   26.09.02 : added OFFSET macro. Thanks Frank Wille for suggestion
  1.10  18.10.02 : reverted to old MorphOS-method for GCC
+ 1.11  09.11.02 : added REGARGS define to MorphOS section
+ 1.12  18.01.04 : some adaptions for AmigaOS4 compatibility
+ 1.13  17.02.04 : changed ASM macros to be a simple define and added
+                  INTERRUPT, CHIP and FAR
+ 1.14  02.03.04 : added UNUSED which can be used to specify a function parameter
+                  or variable as "unused" which will not cause any compiler warning.
+ 1.15  02.03.04 : added special INLINE define for gcc > 3.0 version
+ 1.17  07.03.04 : changed INLINE definition of gcc <= 2.95.3 to be static aswell.
+ 1.18  21.06.04 : added USED and USED_VAR attribute to allow placing a
+                  __attribute__((used)) to a function and a variable, taking care of
+                  different compiler versions.
+ 1.19  04.07.04 : register specification for variables is not supported on MorphOS,
+                  so we modified the REG() macro accordingly.
 */
 
 /*
@@ -31,6 +44,7 @@
 ** above history list and indicate that the change was not made by myself
 ** (e.g. add your name or nick name).
 **
+** Jens Langner <Jens.Langner@light-speed.de> and
 ** Dirk Stöcker <stoecker@epost.de>
 */
 
@@ -60,6 +74,24 @@
 #endif
 #ifdef OFFSET
 #undef OFFSET
+#endif
+#ifdef INTERRUPT
+#undef INTERRUPT
+#endif
+#ifdef CHIP
+#undef CHIP
+#endif
+#ifdef FAR
+#undef FAR
+#endif
+#ifdef UNUSED
+#undef UNUSED
+#endif
+#ifdef USED
+#undef USED
+#endif
+#ifdef USED_VAR
+#undef USED_VAR
 #endif
 
 /* first "exceptions" */
@@ -106,20 +138,41 @@
   #define REGARGS
   #define INLINE inline
 #elif defined(__SASC)
-  #define ASM(arg) arg __asm
+  #define ASM __asm
 #elif defined(__GNUC__)
-  #define REG(reg,arg) arg __asm(#reg)
-  #define LREG(reg,arg) register REG(reg,arg)
-
-  /* Don`t use __stackext for the MorphOS version
-     because we anyway don`t have a libnix ppc with stackext
-     Also we define a VARARGS68K define here to specify
-     functions that should work with that special attribute
-     of the MOS gcc compiler for varargs68k handling. */
-  #if defined(__MORPHOS__)
+  #define UNUSED __attribute__((unused)) /* for functions, variables and types */
+  #define USED   __attribute__((used))   /* for functions only! */
+  #if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ > 0)
+    #define INLINE static __inline __attribute__((always_inline))
+    #define USED_VAR __attribute__((used)) /* for variables only! */
+  #else
+    #define INLINE static __inline__
+    #define USED_VAR                       /* no support for used with variables */
+  #endif
+  /* we have do distinguish between AmigaOS4 and MorphOS */
+  #if defined(__amigaos4__)
+    #define REG(reg,arg) arg
+    #define LREG(reg,arg) register REG(reg,arg)
     #define STDARGS
     #define STACKEXT
+    #define REGARGS
+    #define SAVEDS
+    #define FAR
+    #define CHIP
+    #define INTERRUPT
+  #elif defined(__MORPHOS__)
+    #define REG(reg,arg) arg
+    #define LREG(reg,arg) register REG(reg,arg)
+    #define STDARGS
+    #define STACKEXT
+    #define REGARGS
     #define VARARGS68K  __attribute__((varargs68k))
+    #define FAR
+    #define CHIP
+    #define INTERRUPT
+  #else
+    #define REG(reg,arg) arg __asm(#reg)
+    #define LREG(reg,arg) register REG(reg,arg)
   #endif
 #elif defined(_DCC)
   #define REG(reg,arg) __##reg arg
@@ -131,7 +184,7 @@
 /* then "common" ones */
 
 #if !defined(ASM)
-  #define ASM(arg) arg
+  #define ASM
 #endif
 #if !defined(REG)
   #define REG(reg,arg) register __##reg arg
@@ -164,5 +217,22 @@
   #define OFFSET(structName, structEntry) \
     ((char *)(&(((struct structName *)0)->structEntry))-(char *)0)
 #endif
-
+#if !defined(INTERRUPT)
+  #define INTERRUPT __interrupt
+#endif
+#if !defined(CHIP)
+  #define CHIP __chip
+#endif
+#if !defined(FAR)
+  #define FAR __far
+#endif
+#if !defined(UNUSED)
+  #define UNUSED
+#endif
+#if !defined(USED)
+  #define USED
+#endif
+#if !defined(USED_VAR)
+  #define USED_VAR
+#endif
 #endif /* SDI_COMPILER_H */
