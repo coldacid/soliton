@@ -16,14 +16,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdio.h>               /* sprintf */
-
 #include <clib/alib_protos.h>
+#include <proto/utility.h>
 #include <proto/intuition.h>
 #include <proto/muimaster.h>
 
 #include "About.h"
 #include "Locales.h"
+#include "Support.h"
 
 #define USE_IMG_ABOUT_COLORS
 #include "IMG_About.c"
@@ -57,8 +57,8 @@ static ULONG About_New(struct IClass* cl, Object* obj, struct opSet* msg)
   char *text;
   char version_buf[40];
 
-	sprintf(version_buf, "%d.%d", VERSION, REVISION);
-  snprintf(version_text, sizeof(version_text),GetStr(MSG_ABOUT_VERSION), version_buf, DATE);
+	SPrintf(version_buf, "%ld.%ld", VERSION, REVISION);
+  SNPrintf(version_text, sizeof(version_text),GetStr(MSG_ABOUT_VERSION), version_buf, DATE);
   text = GetStr(MSG_ABOUT);
 
   obj = (Object*)DoSuperNew(cl, obj,
