@@ -43,7 +43,7 @@ STRIP  = $(CROSS_COMPILE)strip
 OPTIMIZE = -O3
 DEBUG = -g #-ggdb # -g -DDEBUG
 INC = -Icommon -Iimages -I "$(MUI_INCLUDE)"
-CFLAGS = -Wall -fno-strict-aliasing $(OPTIMIZE) $(DEBUG) $(INC) -D__USE_INLINE__
+CFLAGS = -Wall -fno-strict-aliasing $(OPTIMIZE) $(DEBUG) $(INC) -D__USE_INLINE__ -DFlush=FFlush
 
 # Flags passed to gcc during linking
 LINK =
