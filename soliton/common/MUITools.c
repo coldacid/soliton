@@ -103,7 +103,7 @@ Object* MakeSlider(int min, int max, int val, int text, int help)
   if (obj) 
   {
     setatt(obj, MUIA_CycleChain  , 1);
-    setatt(obj, MUIA_Slider_Level, val);
+    setatt(obj, MUIA_Numeric_Value, val);
     setatt(obj, MUIA_ShortHelp   , GetStr(help));
   }
   return(obj);

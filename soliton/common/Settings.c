@@ -95,11 +95,11 @@ static ULONG Settings_Get(struct IClass* cl, Object* obj, struct opGet* msg)
       s = &data->settings;
       s->buttons    =   (BOOL)xget(data->CH_Buttons   , MUIA_Selected     );
       s->reqs       =   (BOOL)xget(data->CH_Reqs      , MUIA_Selected     );
-      s->anim       =    (int)xget(data->CY_Anim      , MUIA_Slider_Level );
+      s->anim       =    (int)xget(data->CY_Anim      , MUIA_Numeric_Value );
 
       /* klondike */
       s->block      =   (BOOL)xget(data->CH_Block     , MUIA_Selected     );
-      s->open       =  (ULONG)xget(data->SL_Open      , MUIA_Slider_Level );
+      s->open       =  (ULONG)xget(data->SL_Open      , MUIA_Numeric_Value );
       s->autoopen   =   (BOOL)xget(data->CH_Autoopen  , MUIA_Selected     );
       s->indicator  =   (BOOL)xget(data->CH_Indicator , MUIA_Selected     );
 
