@@ -26,8 +26,11 @@
 #define CATCOMP_ARRAY
 #include "Catalog.h"
 
+#include "SDI_iface.h"
+
 struct Catalog *    catalog    = NULL;
 struct LocaleBase * LocaleBase = NULL;
+EXEC_INTERFACE_DECLARE(struct LocaleIFace *ILocale);
 
 char * GetStr(int num)
 {
@@ -42,16 +45,20 @@ char * GetStr(int num)
 
 void InitLocale(void)
 {
-  if((LocaleBase = (struct LocaleBase *) OpenLibrary("locale.library", 38)))
-    catalog = OpenCatalogA((struct Locale *) NULL, (STRPTR) "Soliton.catalog", 0);
+  if ((LocaleBase = (struct LocaleBase *) OpenLibrary("locale.library", 38)))
+  {
+    if ((EXEC_INTERFACE_GET_MAIN(ILocale,LocaleBase)))
+    {
+      catalog = OpenCatalogA((struct Locale *) NULL, (STRPTR) "Soliton.catalog", 0);
+    }
+  }
 }
 
 void ExitLocale(void)
 {
-  if(catalog)
-    CloseCatalog(catalog);
-  if(LocaleBase)
-    CloseLibrary((struct Library *) LocaleBase);
+  if (catalog) CloseCatalog(catalog);
+  EXEC_INTERFACE_DROP(ILocale);
+  CloseLibrary((struct Library *) LocaleBase); /* NULL pointer safe */
 }
 
 

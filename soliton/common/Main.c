@@ -42,6 +42,8 @@
 #include "Soliton.h"
 #include "Statistics.h"
 
+#include "SDI_iface.h"
+
 #if defined(__MORPHOS__)
 unsigned long __stack = 20000*2;
 #elif defined(__SASC)
@@ -66,53 +68,71 @@ struct UtilityBase *UtilityBase = NULL;
 struct IntuitionBase *IntuitionBase = NULL;
 struct GfxBase *GfxBase = NULL;
 
+EXEC_INTERFACE_DECLARE(struct IntuitionIFace *IIntuition);
+EXEC_INTERFACE_DECLARE(struct GraphicsIFace *IGraphics);
+EXEC_INTERFACE_DECLARE(struct UtilityIFace *IUtility);
+EXEC_INTERFACE_DECLARE(struct LayersIFace *ILayers);
+EXEC_INTERFACE_DECLARE(struct MUIMasterIFace *IMUIMaster);
+EXEC_INTERFACE_DECLARE(struct DataTypesIFace *IDataTypes);
+
 static BOOL InitAll(void)
 {
+	BOOL rc;
+
+  rc = FALSE;
+
   InitLocale();
 
-  if((IntuitionBase = (struct IntuitionBase *) OpenLibrary("intuition.library", 38)))
+  if (!(IntuitionBase = (struct IntuitionBase *) OpenLibrary("intuition.library", 38)))
   {
-    if((MUIMasterBase = OpenLibrary(MUIMASTER_NAME, 17)))
-    {
-      if((UtilityBase = (struct UtilityBase *) OpenLibrary("utility.library", 38)))
-      {
-        if((DataTypesBase = OpenLibrary("datatypes.library", 38)))
-        {
-          if((LayersBase = OpenLibrary("layers.library", 38)))
-          {
-            if((GfxBase = (struct GfxBase *) OpenLibrary("graphics.library", 38)))
-            {
-              if(NoneSlider_Init() &&
-              Cardgame_Init() &&
-              About_Init() &&
-              Statistics_Init() &&
-              BoardWindow_Init() &&
-              Settings_Init() &&
-              Soliton_Init() &&
-              CButton_Init() &&
-              CSolitaire_Init() &&
-              ProfileManager_Init())
-              {
-                return TRUE;
-              }
-            }
-            else
-              ErrorReq(MSG_OPENLIB_GRAPHICS);
-          }
-          else
-            ErrorReq(MSG_OPENLIB_LAYERS);
-        }
-        else
-          ErrorReq(MSG_OPENLIB_DATATYPES);
-      }
-      else
-        ErrorReq(MSG_OPENLIB_UTILITY);
-    }
-    else
-      ErrorReq(MSG_OPENLIB_MUIMASTER);
+		ErrorReq(MSG_OPENLIB_INTUITION);
+  	return FALSE;
   }
-  else
-    ErrorReq(MSG_OPENLIB_INTUITION);
+
+	if (!(MUIMasterBase = OpenLibrary(MUIMASTER_NAME, 17)))
+	{
+		ErrorReq(MSG_OPENLIB_MUIMASTER);
+		return FALSE;
+	}
+	
+	if (!(UtilityBase = (struct UtilityBase *) OpenLibrary("utility.library", 38)))
+	{
+		ErrorReq(MSG_OPENLIB_UTILITY);
+		return FALSE;
+	}
+	
+	if (!(DataTypesBase = OpenLibrary("datatypes.library", 38)))
+	{
+		ErrorReq(MSG_OPENLIB_DATATYPES);
+		return FALSE;
+	}
+	
+	if (!(LayersBase = OpenLibrary("layers.library", 38)))
+	{
+		ErrorReq(MSG_OPENLIB_LAYERS);
+		return FALSE;
+	}
+
+	if (!(GfxBase = (struct GfxBase *) OpenLibrary("graphics.library", 38)))
+	{
+		ErrorReq(MSG_OPENLIB_GRAPHICS);
+		return FALSE;
+	}
+
+  if (!EXEC_INTERFACE_GET_MAIN(IIntuition,IntuitionBase) ||
+      !EXEC_INTERFACE_GET_MAIN(IMUIMaster,MUIMasterBase) ||
+      !EXEC_INTERFACE_GET_MAIN(IUtility,UtilityBase) ||
+      !EXEC_INTERFACE_GET_MAIN(IDataTypes,DataTypesBase) ||
+      !EXEC_INTERFACE_GET_MAIN(ILayers,LayersBase) ||
+      !EXEC_INTERFACE_GET_MAIN(IGraphics,GfxBase))
+ 		return FALSE;
+
+  if (NoneSlider_Init() && Cardgame_Init() && About_Init() && Statistics_Init() &&
+      BoardWindow_Init() && Settings_Init() && Soliton_Init() && CButton_Init() &&
+      CSolitaire_Init() && ProfileManager_Init())
+  {
+		return TRUE;
+  }
 
   return FALSE;
 }
@@ -130,18 +150,19 @@ static void ExitAll(void)
   Cardgame_Exit();
   NoneSlider_Exit();
 
-  if(GfxBase)
-    CloseLibrary((struct Library *) GfxBase);
-  if(LayersBase)
-    CloseLibrary(LayersBase);
-  if(DataTypesBase)
-    CloseLibrary(DataTypesBase);
-  if(UtilityBase)
-    CloseLibrary((struct Library *) UtilityBase);
-  if(MUIMasterBase)
-    CloseLibrary(MUIMasterBase);
-  if(IntuitionBase)
-    CloseLibrary((struct Library *) IntuitionBase);
+  EXEC_INTERFACE_DROP(IGraphics);
+  EXEC_INTERFACE_DROP(ILayers);
+  EXEC_INTERFACE_DROP(IDataTypes);
+  EXEC_INTERFACE_DROP(IUtility);
+  EXEC_INTERFACE_DROP(IMUIMaster);
+  EXEC_INTERFACE_DROP(IIntuition);
+
+  CloseLibrary((struct Library *) GfxBase);
+  CloseLibrary(LayersBase);
+  CloseLibrary(DataTypesBase);
+  CloseLibrary((struct Library *) UtilityBase);
+  CloseLibrary(MUIMasterBase);
+  CloseLibrary((struct Library *) IntuitionBase);
 
   ExitLocale();
 }
@@ -163,7 +184,7 @@ void wbmain(struct WBStartup *wbmsg)
 }
 #endif
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   if(InitAll())
   {
@@ -186,4 +207,5 @@ void main(int argc, char **argv)
       ErrorReq(MSG_CREATE_APPLICATION);
   }
   ExitAll();
+  return 0;
 }

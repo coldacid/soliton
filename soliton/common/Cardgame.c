@@ -40,7 +40,10 @@
 
 #include "IMG_Time.c"
 
+#include "SDI_iface.h"
+
 struct Device *TimerBase;
+EXEC_INTERFACE_DECLARE(struct TimerIFace *ITimer);
 
 struct Buffer
 {
@@ -458,6 +461,7 @@ static void Init(struct Cardgame_Data *data, Object *o)
         data->ihnode.ihn_Flags   = MUIIHNF_TIMER;
         data->timer_blocked      = 1;
         TimerBase = (struct Device *) data->req->tr_node.io_Device;
+        EXEC_INTERFACE_GET_MAIN(ITimer,TimerBase);
         GetSysTime(&data->lasttick);
       }
     }
@@ -478,7 +482,12 @@ static void Destruct(struct Cardgame_Data *data)
   if(data->req)
   {
     if(data->req->tr_node.io_Device)
+    {
+    	EXEC_INTERFACE_DROP(ITimer);
+    	EXEC_INTERFACE_ASSIGN(ITimer,NULL);
       CloseDevice((struct IORequest *)data->req);
+      TimerBase = NULL;
+    }
     DeleteIORequest((struct IORequest*)data->req);
   }
   if(data->port)
