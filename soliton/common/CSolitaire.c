@@ -177,8 +177,6 @@ static BOOL Finished(struct CSolitaire_Data *data)
   {
     if(!data->stats.finished)
     {
-      STRPTR a, b;
-
       for(i = 4; i < 8; i++)
       {
         top = Top(data, i);
@@ -639,7 +637,7 @@ static void UpdateIndicator(struct CSolitaire_Data *data)
 static void DisplayStats(struct CSolitaire_Data *data)
 {
   static char str[20];
-  LONG s;
+  int s;
   Object *app;
 
   s = data->stats.game_seconds;
