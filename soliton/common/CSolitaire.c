@@ -1389,23 +1389,23 @@ DISPATCHERPROTO(CSolitaire_Dispatcher)
     case OM_NEW                   : return CSolitaire_New        (cl, obj, (struct opSet *) msg);
     case OM_DISPOSE               : return CSolitaire_Dispose    (cl, obj, msg);
 
-    case MUIM_Cardgame_DragStart  : return (data->gameonline ?
+    case MUIM_Cardgame_DragStart  : return (data->gameonline && !data->stats.finished ?
                                     dragStart(data, ((struct MUIP_Cardgame_DragStart*)msg)->source,
                                     ((struct MUIP_Cardgame_DragStart*)msg)->size) : 0UL);
 
-    case MUIM_Cardgame_DragAccept : return (data->gameonline ? 
+    case MUIM_Cardgame_DragAccept : return (data->gameonline && !data->stats.finished ? 
                                     dragAccept(data, ((struct MUIP_Cardgame_DragAccept*)msg)->source,
                                     ((struct MUIP_Cardgame_DragAccept*)msg)->dest,
                                     ((struct MUIP_Cardgame_DragAccept*)msg)->size,
                                     ((struct MUIP_Cardgame_DragAccept*)msg)->cards) : 0UL);
 
-    case MUIM_Cardgame_DragDone   : if(data->gameonline)
+    case MUIM_Cardgame_DragDone   : if(data->gameonline && !data->stats.finished )
                                       dragDone(data, ((struct MUIP_Cardgame_DragDone*)msg)->source,
                                                    ((struct MUIP_Cardgame_DragDone*)msg)->dest,
                                                    ((struct MUIP_Cardgame_DragDone*)msg)->size);
                                     return 0;
 
-    case MUIM_Cardgame_ClickCard  : return (data->gameonline ? 
+    case MUIM_Cardgame_ClickCard  : return (data->gameonline && !data->stats.finished ? 
                                     clickCard(data, ((struct MUIP_Cardgame_ClickCard*)msg)->pile,
                                     ((struct MUIP_Cardgame_ClickCard*)msg)->nr,
                                     ((struct MUIP_Cardgame_ClickCard*)msg)->dblclck) : 0UL);

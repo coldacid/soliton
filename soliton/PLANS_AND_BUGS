@@ -15,11 +15,6 @@ ToDo:
  - Freecell game mode with 10 stacks (own gamemode)
    - This is really necessary with EqualColors option.
  - Including other solitaire game modes.
- - do not reduce points, when empty cardstack is clicked
- - I've also encountered a bug in the hiscore/scoring system
-   when you've finished a game and you've come on the hiscore then you can get
-   a lot more points by moving the cards to the playfield while the hiscore
-   requester is open.
 
 CSolitaire.c:
  - Split file into modules for every game, unify interface for different
