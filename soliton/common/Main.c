@@ -5,18 +5,24 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <clib/alib_protos.h>
+#include <exec/types.h>
+#include <workbench/workbench.h>
+#include <workbench/startup.h>
 #include <proto/exec.h>
 #include <proto/intuition.h>
 #include <proto/muimaster.h>
@@ -186,7 +192,20 @@ static void ExitAll(void)
   main
 ****************************************************************************************/
 
-void main(void)
+#ifdef __STORM__
+void wbmain(struct WBStartup *wbmsg)
+{
+	char *args[2], game[256];
+	args[0] = wbmsg->sm_ArgList[0].wa_Name;
+	args[1] = game;
+
+	CurrentDir(wbmsg->sm_ArgList[0].wa_Lock);
+
+	main(2,args);
+}
+#endif
+
+void main(int argc, char **argv)
 {
   if(InitAll())
   {

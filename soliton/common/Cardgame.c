@@ -5,12 +5,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -39,23 +39,13 @@
 
 struct Device *TimerBase;
 
-static void drawBackground(struct Cardgame_Data *data, struct RastPort *rp, int x, int y, int w,
-  int h, int offx, int offy);
-static void drawCard(struct Cardgame_Data *data, struct RastPort *rp, int nr, int x, int y, int mode);
-static void dragAbort(struct Cardgame_Data *data);
-static int mousePileAcceptable(struct Cardgame_Data *data, int mx, int my); /* tolerated drop position or -1 */
-static LONG mousePile(struct Cardgame_Data *data, int mx, int my, LONG *cnr); /* get pile# and #of cards or -1 */
-static void dragDrop(struct Cardgame_Data *data, int to); /* do the drag */
-static void dragInit(struct Cardgame_Data *data, int from, int size); /* start drag, create ghost */
-static void dragGoXY(struct Cardgame_Data *data, int x, int y, BOOL fly); /* move ghost (with/without steps inbetween) */
-
 struct Buffer
 {
   int             width;
   int             height;
   int             depth;
-  struct BitMap * bmp;          
-  struct RastPort rp; 
+  struct BitMap * bmp;
+  struct RastPort rp;
 };
 
 #define OUTSIDE   -10000 /* Ghost invisible */
@@ -126,7 +116,7 @@ struct Cardgame_Data
   BOOL      dragsimulated,            //  Falls die Karten nach drag nicht kopiert werden sollen
             oldopaque;
 
-  int       animspeed;                
+  int       animspeed;
 
   /* Game-Timer */
   struct MsgPort *            port;
@@ -140,6 +130,15 @@ struct Cardgame_Data
   enum { MOVEGHOST, UPDATEPILE } update_mode;          //  Art des Drawupdates
   int  update_pile;                                    //  Übergabe eines Stacks an Update
 };
+
+static void drawBackground(struct Cardgame_Data *, struct RastPort *, int, int, int, int, int, int);
+static void drawCard(struct Cardgame_Data *, struct RastPort *, int, int, int, int);
+static void dragAbort(struct Cardgame_Data *);
+static int mousePileAcceptable(struct Cardgame_Data *, int, int); /* tolerated drop position or -1 */
+static LONG mousePile(struct Cardgame_Data *, int , int , LONG *); /* get pile# and #of cards or -1 */
+static void dragDrop(struct Cardgame_Data *, int); /* do the drag */
+static void dragInit(struct Cardgame_Data *, int, int); /* start drag, create ghost */
+static void dragGoXY(struct Cardgame_Data *, int, int, BOOL); /* move ghost (with/without steps inbetween) */
 
 static STRPTR stringCopy(STRPTR src)
 {
@@ -268,7 +267,7 @@ static void PileUpdate(struct Pile *p, struct RastPort* rp, LONG xx, LONG yy)
       else if(p->type < 'T') c = 200+p->type-'A';
       else c = 1;
     }
-    else 
+    else
       c = p->card[p->cardSize - 1];
     drawCard(p->data, rp, c, xx, yy, 0);
     break;
@@ -490,7 +489,7 @@ static BOOL getNumber(char* s, int *pos, char terminator, long *n)
   /* read number inclusive terminator */
   char num[80]; /* buffer for number */
   int slen, i;
-  
+
   slen = strlen(s);
   for(i = 0; *pos < slen && s[*pos] != terminator; i++)
   {
@@ -553,7 +552,7 @@ static BOOL createPiles(struct Cardgame_Data *data, char* s)
       else
         return FALSE;
       pos++;
-      
+
       if(pos >= slen || s[pos] != ',')
         return FALSE;
       pos++;
@@ -616,8 +615,7 @@ static void setPilesPos(struct Cardgame_Data *data, int scalex, int scaley)
 }
 
 /* Drawing */
-static void drawBackground(struct Cardgame_Data *data, struct RastPort *rp, int x, int y, int w,
-int h, int offx, int offy)
+static void drawBackground(struct Cardgame_Data *data, struct RastPort *rp, int x, int y, int w, int h, int offx, int offy)
 {
   if(data->pattern)
   {
@@ -633,7 +631,7 @@ int h, int offx, int offy)
     while(donew < w)
     {
       int nw;
-      
+
       if((nw = w - donew) > data->pattern_width)
         nw = data->pattern_width;
       BltBitMapRastPort(data->pattern_bmp, 0, offy, rp, x + donew, y, nw, doneh, 0xC0);
@@ -770,7 +768,7 @@ static void drawCard(struct Cardgame_Data *data, struct RastPort *rp, int nr, in
         case  7: name[0] = '7';  break;
         case  8: name[0] = '8';  break;
         case  9: name[0] = '9';  break;
-        case 10: name[0] = '1'; 
+        case 10: name[0] = '1';
                  name[1] = '0';  break;
         case 11: name[0] = 'J';  break;
         case 12: name[0] = 'Q';  break;
@@ -848,7 +846,7 @@ static void drawObject(struct Cardgame_Data *data)
   /* draw stack*/
   drawBackground(data, data->rp, data->left, data->top, data->width, data->height, 0, 0);
 
-  for(nr = 0; nr < data->pileSize; nr++) 
+  for(nr = 0; nr < data->pileSize; nr++)
     PileDraw(data->pile+nr, data->rp, data->pile[nr].x + data->left, data->pile[nr].y + data->top);
 }
 
@@ -938,7 +936,7 @@ static void setStatus(struct Cardgame_Data *data, int action, char* text)
         ;
       if(i < 10)  /* start at directory boundaries, when less than 10 */
         text += i; /* chars snipped */
-        
+
       tt[0] = tt[1] = tt[2] = '.';
       for(j = 0; text[j]; ++j)
         tt[j+3] = text[j];
@@ -970,10 +968,10 @@ static void mouseUp(struct Cardgame_Data *data, int mx, int my, BOOL dc)
   setatt(_win(data->obj), MUIA_Window_NoMenus, FALSE);
 
   if(data->dragndrop)
-  { 
+  {
     if((i = mousePileAcceptable(data, mx, my)) == -1)
       DisplayBeep(_screen(data->obj));
-    
+
     size = data->dragpile->cardSize;
     dragDrop(data, i);
 
@@ -991,7 +989,7 @@ static void mouseMove(struct Cardgame_Data *data, int mx, int my)
   if(!data->dragndrop && abs(mx - data->mausx) + abs(my - data->mausy) > 3)
   {
     LONG cnt, i;
-    
+
     i = mousePile(data, data->mausx, data->mausy, &cnt);
     if(i != -1 && cnt)
     {
@@ -1098,7 +1096,7 @@ static void dragInit(struct Cardgame_Data *data, int from, int size)
     data->dragsimulated = FALSE;
 
   /* initialize drag structure, get cards */
-  
+
   f = data->pile+from;
   data->dragfrom = from;
 
@@ -1132,7 +1130,7 @@ static void dragInit(struct Cardgame_Data *data, int from, int size)
 
     PileUpdate(f, &data->ghostBuffer->rp, 0, 0);
 
-    ClipBlit(&data->ghostBuffer->rp, data->ghostX - f->x, data->ghostY - f->y, 
+    ClipBlit(&data->ghostBuffer->rp, data->ghostX - f->x, data->ghostY - f->y,
              &data->ghostBuffer->rp, 0, 0, data->ghostW, data->ghostH, 0xC0);
   }
   else
@@ -1212,10 +1210,8 @@ static void dragDrop(struct Cardgame_Data *data, int to)
     MUI_Redraw(data->obj, MADF_DRAWUPDATE);
   }
 
-  //  To-Pile updaten. Das ist leider nötig, damit 
-  //  old_xxx auf die richtigen Werte gesetzt,
-  //  wegen nicht-opaque und wegen V auf H-Drags, etc.
-  //
+  /* Update to-pile. This is necessary to get old_xxx set with valid values
+     because of non-opaque and V to H-Drags, ... */
 
   data->update_mode = UPDATEPILE;
   data->update_pile = to;
@@ -1312,8 +1308,8 @@ static BOOL Overlap(int *x1, int *y1, int *x2, int *y2, int *w, int *h)
 static void ghostMove(struct Cardgame_Data *data, int x, int y)
 {
   /* correct boundary problems */
-  
-  if(x != OUTSIDE) 
+
+  if(x != OUTSIDE)
   {
     int w1 = data->width - 1,
         h1 = data->height - 1;
@@ -1334,7 +1330,7 @@ static void ghostMove(struct Cardgame_Data *data, int x, int y)
         ww = data->ghostW, hh = data->ghostH;
     BOOL lap;
     struct Buffer *a;
-  
+
     /* copy new background into buffer2 */
     ClipBlit(data->rp, data->left + x, data->top + y, &data->ghostBuffer2->rp, 0, 0,
              data->ghostW, data->ghostH, 0xC0);
@@ -1365,7 +1361,7 @@ static void ghostMove(struct Cardgame_Data *data, int x, int y)
     }
     else
     {
-      ClipBlit(&data->ghostBuffer->rp, 0, 0, data->rp, data->left + data->ghostX, data->top + data->ghostY, 
+      ClipBlit(&data->ghostBuffer->rp, 0, 0, data->rp, data->left + data->ghostX, data->top + data->ghostY,
                data->ghostW, data->ghostH, 0xC0);
     }
 
@@ -1422,7 +1418,7 @@ static ULONG _TimerReset(struct IClass* cl, Object* obj/*, Msg msg*/)
   return 0;
 }
 
-static ULONG _MoveCards(struct IClass* cl, Object* obj, 
+static ULONG _MoveCards(struct IClass* cl, Object* obj,
                          struct MUIP_Cardgame_MoveCards* msg)
 {
   struct Cardgame_Data* data = (struct Cardgame_Data*)INST_DATA(cl, obj);
@@ -1452,7 +1448,7 @@ static ULONG _SetEmptyImage(struct IClass* cl, Object* obj, struct MUIP_Cardgame
   return FALSE;
 }
 
-static ULONG _SetCards(struct IClass* cl, Object* obj, 
+static ULONG _SetCards(struct IClass* cl, Object* obj,
                         struct MUIP_Cardgame_SetCards* msg)
 {
   int i;
@@ -1477,7 +1473,7 @@ static ULONG _SetCards(struct IClass* cl, Object* obj,
   return FALSE;
 }
 
-static ULONG _GetCards(struct IClass* cl, Object* obj, 
+static ULONG _GetCards(struct IClass* cl, Object* obj,
                         struct MUIP_Cardgame_GetCards* msg)
 {
   int i;
@@ -1492,7 +1488,7 @@ static ULONG _GetCards(struct IClass* cl, Object* obj,
   return FALSE;
 }
 
-static ULONG _SetGraphic(struct IClass* cl, Object* obj, 
+static ULONG _SetGraphic(struct IClass* cl, Object* obj,
                          struct MUIP_Cardgame_SetGraphic* msg)
 {
   struct Cardgame_Data* data = (struct Cardgame_Data*)INST_DATA(cl, obj);
@@ -1502,7 +1498,7 @@ static ULONG _SetGraphic(struct IClass* cl, Object* obj,
   {
     if(!data->pattern_name || strcmp(msg->pattern, data->pattern_name))
     {
-      if(data->pattern_name) 
+      if(data->pattern_name)
         FreeVec(data->pattern_name);
       data->pattern_name = stringCopy(msg->pattern);
       change = TRUE;
@@ -1746,7 +1742,7 @@ static ULONG _Setup(struct IClass* cl, Object* obj, Msg msg)
       DoMethod(data->pattern, DTM_PROCLAYOUT, NULL, 1);
       GetDTAttrs(data->pattern, PDTA_BitMapHeader , &bhd, TAG_DONE);
       GetDTAttrs(data->pattern, PDTA_DestBitMap   , &data->pattern_bmp, TAG_DONE);
-      if(!bhd || !data->pattern_bmp) 
+      if(!bhd || !data->pattern_bmp)
       {
         DisposeDTObject(data->pattern);
         data->pattern = NULL;
@@ -1772,7 +1768,7 @@ static ULONG _Setup(struct IClass* cl, Object* obj, Msg msg)
       DoMethod(data->cardset, DTM_PROCLAYOUT, NULL, 1);
       GetDTAttrs(data->cardset, PDTA_BitMapHeader , &bhd, TAG_DONE);
       GetDTAttrs(data->cardset, PDTA_DestBitMap   , &data->cardset_bmp, TAG_DONE);
-      if (!bhd || !data->cardset_bmp) 
+      if (!bhd || !data->cardset_bmp)
       {
         DisposeDTObject(data->cardset);
         data->cardset = NULL;
@@ -1826,7 +1822,7 @@ static ULONG _Cleanup(struct IClass* cl, Object* obj, Msg msg)
 
   if(data->pattern)
     DisposeDTObject(data->pattern);
-  if(data->cardset) 
+  if(data->cardset)
   {
     DisposeDTObject(data->cardset);
     if(data->tempcardset)
@@ -1870,7 +1866,7 @@ static ULONG _AskMinMax(struct IClass *cl, Object *obj, struct MUIP_AskMinMax *m
   minh = allh;
 
   scr = _screen(obj);
-  if(scr->Width < allw + 60 || scr->Height < allh + 30) 
+  if(scr->Width < allw + 60 || scr->Height < allh + 30)
   {
     // hier ist mit (nicht sicher, da feste werte!!!) clipping zu rechnen
     minw = 250;
@@ -1946,7 +1942,7 @@ static ULONG _Draw(struct IClass *cl, Object *obj, struct MUIP_Draw *msg)
   if(msg->flags & MADF_DRAWUPDATE)
   {
     if(data->clipping)
-      cliphandle = MUI_AddClipping(muiRenderInfo(obj), _mleft(obj), _mtop(obj), 
+      cliphandle = MUI_AddClipping(muiRenderInfo(obj), _mleft(obj), _mtop(obj),
                                                        _mwidth(obj), _mheight(obj));
 
     switch(data->update_mode)
@@ -1972,13 +1968,13 @@ static ULONG _Draw(struct IClass *cl, Object *obj, struct MUIP_Draw *msg)
     setPilesPos(data, 100, 100);
     widthHeight(data, &allw, &allh);
 
-    if(_width(obj) < allw || _height(obj) < allh) 
+    if(_width(obj) < allw || _height(obj) < allh)
       data->clipping = TRUE;
     else
       data->clipping = FALSE;
 
     if(data->clipping)
-      cliphandle = MUI_AddClipping(muiRenderInfo(obj), _mleft(obj), _mtop(obj), 
+      cliphandle = MUI_AddClipping(muiRenderInfo(obj), _mleft(obj), _mtop(obj),
                                                        _mwidth(obj), _mheight(obj));
 
     drawObject(data);
@@ -2141,7 +2137,7 @@ static ULONG _Get(struct IClass* cl, Object* obj, struct opGet* msg)
 /***************************************************************************************
   Init / Exit / Dispatcher
 ***************************************************************************************/
- 
+
 DISPATCHERPROTO(Cardgame_Dispatcher)
 {
   switch(msg->MethodID)

@@ -1,0 +1,405 @@
+Storm Shell Project (0018)
+Settings (Start)
+C/C++ Environment
+"StormC:include"
+0
+"Source2:C/soliton/common"
+0
+"Source2:C/soliton/images"
+0
+Includepath (End)
+0 "" 80
+1 "objects_020"
+1 0 "makelog.txt"
+""
+0
+0 1
+0
+0 0
+C/C++ Preprozessor
+1 "NDEBUG" ""
+0
+Defines (End)
+1 1 1
+0 0
+C/C++ Options
+0 0 0 1 0 0 0 0 0 1 0 5 1 3 0
+0 0 0
+0
+0 1 0
+C/C++ Optimizer
+9
+C/C++ Warnings
+1 1 1 1 1 1 0 1
+0 0
+GCC Options (1)
+1 "NDEBUG" ""
+0
+Defines (End)
+1 0 0 1 0
+1 0 0 0 0 1 0
+0 0 0 0 0
+0 0 0 0 1 0 0
+6 1 0 0
+0 ""
+2 0 0 0
+0 0 0 0 0 0 0 0 0 1
+0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0
+Assembler
+0 ""
+0 "CON://640/200/Storm Assembler/AUTO/WAIT/SCREEN StormScreen"
+0 0
+0 1 60 0 1 0 0 20 0
+Sets (End)
+0 1 0 0 0 2 1 0 0
+1 1 1 1 0 0 0 0 0
+1 0
+0 0 0 0 0
+Linker
+0 0 "PROGDIR:startup.o" 0 0 1 0 0 0 0
+"StormC:lib/" 0 "StormC:lib/logfile" 0 1 1
+0 "_WizardSurface"
+0 0 50 0 50 0 50 0 0
+0 0 0 0 0 0 0 0
+Run
+30 "" "" "" 0
+""
+
+1 "CON://400/180/Storm Console/AUTO/WAIT/SCREEN StormScreen" "RAM:Output" "RAM:Input"
+1 0
+0 0 0 "" ""
+Settings (End)
+Storm Shell Project (Custom Sections End)
+Section
+1003 1 -128
+"Locale catalogs: locale"
+15
+"locale"
+0 1 1 0
+8
+File
+1003 "locale/Soliton.cd"
+"locale/Soliton.cd"
+Storm Shell Project (Dependencies)
+"locale/Soliton.h" ""
+"StormC:rexx/catcomp.srx"
+0 0
+Section
+1000 1 100
+"Sources: common"
+1
+"common"
+0 1 1 0
+4
+File
+1000 "common/About.c"
+"common/About.c"
+"common/About.h"
+"common/MUITools.h"
+"common/SDI_compiler.h"
+"common/Locales.h"
+"common/Catalog.h"
+Storm Shell Project (Dependencies)
+"objects_020/About.o" "objects_020/About.debug"
+""
+1 1
+File
+1000 "common/BoardWindow.c"
+"common/BoardWindow.c"
+"common/About.h"
+"common/MUITools.h"
+"common/SDI_compiler.h"
+"common/BoardWindow.h"
+"common/Cardgame.h"
+"common/CButton.h"
+"common/CSolitaire.h"
+"common/Locales.h"
+"common/ProfileManager.h"
+"common/Soliton.h"
+"common/Settings.h"
+"common/Catalog.h"
+Storm Shell Project (Dependencies)
+"objects_020/BoardWindow.o" "objects_020/BoardWindow.debug"
+""
+1 1
+File
+1000 "common/Cardgame.c"
+"common/Cardgame.c"
+"common/Cardgame.h"
+"common/MUITools.h"
+"common/SDI_compiler.h"
+"common/Locales.h"
+"common/Catalog.h"
+Storm Shell Project (Dependencies)
+"objects_020/Cardgame.o" "objects_020/Cardgame.debug"
+""
+1 1
+File
+1000 "common/CButton.c"
+"common/CButton.c"
+"common/CButton.h"
+"common/MUITools.h"
+"common/SDI_compiler.h"
+"common/Locales.h"
+"common/Catalog.h"
+Storm Shell Project (Dependencies)
+"objects_020/CButton.o" "objects_020/CButton.debug"
+""
+1 1
+File
+1000 "common/CSolitaire.c"
+"common/CSolitaire.c"
+"common/Cardgame.h"
+"common/MUITools.h"
+"common/SDI_compiler.h"
+"common/CButton.h"
+"common/CSolitaire.h"
+"common/Locales.h"
+"common/Catalog.h"
+"common/Settings.h"
+"common/Soliton.h"
+Storm Shell Project (Dependencies)
+"objects_020/CSolitaire.o" "objects_020/CSolitaire.debug"
+""
+1 1
+File
+1000 "common/Locales.c"
+"common/Locales.c"
+"common/Catalog.h"
+Storm Shell Project (Dependencies)
+"objects_020/Locales.o" "objects_020/Locales.debug"
+""
+1 1
+File
+1000 "common/Main.c"
+"common/Main.c"
+"common/About.h"
+"common/MUITools.h"
+"common/SDI_compiler.h"
+"common/BoardWindow.h"
+"common/Cardgame.h"
+"common/CButton.h"
+"common/CSolitaire.h"
+"common/Locales.h"
+"common/Catalog.h"
+"common/ProfileManager.h"
+"common/Settings.h"
+"common/Soliton.h"
+"common/Statistics.h"
+Storm Shell Project (Dependencies)
+"objects_020/Main.o" "objects_020/Main.debug"
+""
+1 1
+File
+1000 "common/MUITools.c"
+"common/MUITools.c"
+"common/Locales.h"
+"common/Catalog.h"
+"common/MUITools.h"
+"common/SDI_compiler.h"
+Storm Shell Project (Dependencies)
+"objects_020/MUITools.o" "objects_020/MUITools.debug"
+""
+1 1
+File
+1000 "common/ProfileManager.c"
+"common/ProfileManager.c"
+"common/Cardgame.h"
+"common/MUITools.h"
+"common/SDI_compiler.h"
+"common/Locales.h"
+"common/Catalog.h"
+"common/ProfileManager.h"
+Storm Shell Project (Dependencies)
+"objects_020/ProfileManager.o" "objects_020/ProfileManager.debug"
+""
+1 1
+File
+1000 "common/Settings.c"
+"common/Settings.c"
+"common/Locales.h"
+"common/Catalog.h"
+"common/Settings.h"
+"common/MUITools.h"
+"common/SDI_compiler.h"
+"common/Soliton.h"
+Storm Shell Project (Dependencies)
+"objects_020/Settings.o" "objects_020/Settings.debug"
+""
+1 1
+File
+1000 "common/Soliton.c"
+"common/Soliton.c"
+"common/About.h"
+"common/MUITools.h"
+"common/SDI_compiler.h"
+"common/BoardWindow.h"
+"common/Locales.h"
+"common/Catalog.h"
+"common/ProfileManager.h"
+"common/Settings.h"
+"common/Soliton.h"
+"common/Statistics.h"
+Storm Shell Project (Dependencies)
+"objects_020/Soliton.o" "objects_020/Soliton.debug"
+""
+1 1
+File
+1000 "common/Statistics.c"
+"common/Statistics.c"
+"common/CSolitaire.h"
+"common/MUITools.h"
+"common/SDI_compiler.h"
+"common/Locales.h"
+"common/Catalog.h"
+"common/ProfileManager.h"
+"common/Statistics.h"
+"common/Soliton.h"
+Storm Shell Project (Dependencies)
+"objects_020/Statistics.o" "objects_020/Statistics.debug"
+""
+1 1
+Section
+1008 1 95
+"Headers: locale"
+2
+"locale"
+0 1 1 0
+2
+File
+1008 "locale/Soliton.h"
+"locale/Soliton.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+Section
+1007 1 95
+"Headers: common"
+2
+"common"
+0 1 1 0
+2
+File
+1007 "common/About.h"
+"common/About.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+1007 "common/MUITools.h"
+"common/MUITools.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+1007 "common/SDI_compiler.h"
+"common/SDI_compiler.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+1007 "common/Locales.h"
+"common/Locales.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+1007 "common/Catalog.h"
+"common/Catalog.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+1007 "common/BoardWindow.h"
+"common/BoardWindow.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+1007 "common/Cardgame.h"
+"common/Cardgame.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+1007 "common/CButton.h"
+"common/CButton.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+1007 "common/CSolitaire.h"
+"common/CSolitaire.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+1007 "common/ProfileManager.h"
+"common/ProfileManager.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+1007 "common/Soliton.h"
+"common/Soliton.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+1007 "common/Settings.h"
+"common/Settings.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+1007 "common/Statistics.h"
+"common/Statistics.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+Section
+10 1 40
+0 0 0 0
+7
+File
+10 "soliton"
+"soliton"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+Section
+5 1 -50
+0 0 0 0
+7
+File
+5 "storm.lib"
+"storm.lib"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+5 "amiga.lib"
+"amiga.lib"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+Storm Shell Project (End)
