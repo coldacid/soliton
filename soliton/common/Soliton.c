@@ -152,6 +152,7 @@ static ULONG Soliton_New(struct IClass* cl, Object* obj, struct opSet* msg)
 
     setatt(obj, MUIA_Soliton_Settings, xget(tmp.WI_Settings, MUIA_Settings_Settings)); 
 
+    DoMethod(tmp.WI_Main, MUIM_BoardWindow_GameMode);
     setatt(tmp.WI_Main, MUIA_Window_Open, TRUE);
 
     if(!xget(tmp.WI_Main, MUIA_Window_Open))

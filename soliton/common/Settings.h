@@ -29,18 +29,13 @@ enum SettingsID { ID_OPEN = 100, ID_BLOCK, ID_AUTOOPEN, ID_INDICATOR, ID_REQS,
   ID_MENU_KLONDIKE = 300, ID_MENU_FREECELL,
 };
 
-enum GameMode {GAMEMODE_KLONDIKE=0, GAMEMODE_FREECELL};
-
 #define MUIA_Settings_Settings        (TAGBASE_KAI | 0x1301) /* [..G] */
 #define MUIM_Settings_Close           (TAGBASE_KAI | 0x1302)
-#define MUIM_Settings_GameMode        (TAGBASE_KAI | 0x1303) /* [IS.] */
 
 struct MUIP_Settings_Close            {ULONG MethodID; LONG typ;};
-struct MUIP_Settings_GameMode         {ULONG MethodID; enum GameMode mode;};
 
 struct Settings
 {
-  enum GameMode gamemode; /* Freecell or Klondike */
   BOOL  buttons;   /* show buttons */
   BOOL  beep;      /* display beep */
   BOOL  reqs;      /* security requesters */

@@ -23,6 +23,8 @@
 
 extern struct MUI_CustomClass *CL_CSolitaire;
 
+enum GameMode {GAMEMODE_KLONDIKE=0, GAMEMODE_FREECELL};
+
 #define MUIM_CSolitaire_NewGame     (TAGBASE_KAI | 0x2001)
 #define MUIM_CSolitaire_Undo        (TAGBASE_KAI | 0x2002)
 #define MUIA_CSolitaire_Timer       (TAGBASE_KAI | 0x2003)  /*  [I..] */
@@ -34,6 +36,8 @@ extern struct MUI_CustomClass *CL_CSolitaire;
 #define MUIA_CSolitaire_Score       (TAGBASE_KAI | 0x2013)  /*  [I..] */
 
 #define MUIM_CSolitaire_GameMode    (TAGBASE_KAI | 0x2021)  /*  [IS.] */
+
+struct MUIP_CSolitaire_GameMode     {ULONG MethodID; enum GameMode mode;};
 
 struct Stats
 {

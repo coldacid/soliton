@@ -136,6 +136,8 @@ struct BoardWindow_Data
   Object *movegroup;
   Object *MEN_Profiles;
   Object *WI_ProfileManager;
+  Object *MEN_GameKlondike;
+  Object *MEN_GameFreecell;
 };
 
 enum {
@@ -216,6 +218,24 @@ static ULONG _NewGame(struct IClass* cl, Object* obj/*, Msg msg*/)
   return 0;
 }
 
+/****************************************************************************************
+  GameMode
+****************************************************************************************/
+
+static ULONG _GameMode(struct IClass* cl, Object* obj/*, Msg msg*/)
+{
+  struct BoardWindow_Data* data = (struct BoardWindow_Data *) INST_DATA(cl, obj);
+  enum GameMode a;
+  LONG r;
+
+  get(data->MEN_GameFreecell, MUIA_Menuitem_Checked, &r);
+  if(r) a = GAMEMODE_FREECELL;
+  else a = GAMEMODE_KLONDIKE; /* we need not check the last case! */
+
+  DoMethod(data->solitaire, MUIM_CSolitaire_GameMode, a);
+
+  return 0;
+}
 
 /****************************************************************************************
   New
@@ -348,8 +368,6 @@ static ULONG _New(struct IClass* cl, Object* obj, struct opSet * msg)
 
   if(obj)
   {
-    Object *gm;
-  
     DoMethod(obj         , MUIM_Notify, MUIA_Window_CloseRequest, TRUE , obj                     , 1, MUIM_BoardWindow_Quit);
   
     DoMethod(BT_New      , MUIM_Notify, MUIA_Pressed            , FALSE, obj                     , 1, MUIM_BoardWindow_NewGame);
@@ -368,10 +386,10 @@ static ULONG _New(struct IClass* cl, Object* obj, struct opSet * msg)
     DoMethod(MenuObj(tmp.strip, MEN_UNDO       ), MUIM_Notify, MUIA_Menuitem_Trigger, MUIV_EveryTime, tmp.solitaire          , 1, MUIM_CSolitaire_Undo);
     DoMethod(MenuObj(tmp.strip, MEN_MANPROFILES), MUIM_Notify, MUIA_Menuitem_Trigger, MUIV_EveryTime, tmp.WI_ProfileManager  , 1, MUIM_ProfileManager_Open);
 
-    DoMethod((gm = MenuObj(tmp.strip, MEN_KLONDIKE)), MUIM_Notify, MUIA_Menuitem_Trigger, MUIV_EveryTime, tmp.solitaire          , 2, MUIM_CSolitaire_GameMode, GAMEMODE_KLONDIKE);
-    setatt(gm, MUIA_ObjectID, ID_MENU_KLONDIKE);
-    DoMethod((gm = MenuObj(tmp.strip, MEN_FREECELL)), MUIM_Notify, MUIA_Menuitem_Trigger, MUIV_EveryTime, tmp.solitaire          , 2, MUIM_CSolitaire_GameMode, GAMEMODE_FREECELL);
-    setatt(gm, MUIA_ObjectID, ID_MENU_FREECELL);
+    DoMethod((tmp.MEN_GameKlondike = MenuObj(tmp.strip, MEN_KLONDIKE)), MUIM_Notify, MUIA_Menuitem_Trigger, MUIV_EveryTime, tmp.solitaire          , 2, MUIM_CSolitaire_GameMode, GAMEMODE_KLONDIKE);
+    setatt(tmp.MEN_GameKlondike, MUIA_ObjectID, ID_MENU_KLONDIKE);
+    DoMethod((tmp.MEN_GameFreecell = MenuObj(tmp.strip, MEN_FREECELL)), MUIM_Notify, MUIA_Menuitem_Trigger, MUIV_EveryTime, tmp.solitaire          , 2, MUIM_CSolitaire_GameMode, GAMEMODE_FREECELL);
+    setatt(tmp.MEN_GameFreecell, MUIA_ObjectID, ID_MENU_FREECELL);
 
     DoMethod(obj, MUIM_Notify, MUIA_Window_Activate, MUIV_EveryTime, tmp.solitaire, 3, MUIM_Set, MUIA_Cardgame_TimerRunning, MUIV_TriggerValue);
 
@@ -397,6 +415,7 @@ DISPATCHERPROTO(_Dispatcher)
     case MUIM_BoardWindow_Quit         : return _Quit         (/*cl,*/ obj/*, msg*/);
     case MUIM_BoardWindow_NewSettings  : return _NewSettings  (cl, obj/*, msg*/);
     case MUIM_BoardWindow_NewGame      : return _NewGame      (cl, obj/*, msg*/);
+    case MUIM_BoardWindow_GameMode     : return _GameMode     (cl, obj/*, msg*/);
   }
   return DoSuperMethodA(cl, obj, msg);
 }

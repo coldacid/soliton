@@ -268,10 +268,6 @@ DISPATCHERPROTO(Settings_Dispatcher)
     case OM_NEW:              return(Settings_New   (cl, obj, (struct opSet *) msg));
     case OM_GET:              return(Settings_Get   (cl, obj, (struct opGet *) msg));
     case MUIM_Settings_Close: return(Settings_Close (/*cl,*/ obj, (struct MUIP_Settings_Close *) msg));
-    case MUIM_Settings_GameMode:
-      ((struct Settings_Data *) INST_DATA(cl, obj))->settings.gamemode =
-      ((struct MUIP_Settings_GameMode *)msg)->mode;
-      break;
   }
   return DoSuperMethodA(cl, obj, msg);
 }

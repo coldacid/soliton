@@ -1290,7 +1290,6 @@ static ULONG CSolitaire_New(struct IClass* cl, Object* obj, struct opSet* msg)
     data->timer      = (Object*)GetTagData(MUIA_CSolitaire_Timer     , 0, msg->ops_AttrList);
     data->movebutton = (Object*)GetTagData(MUIA_CSolitaire_MoveButton, 0, msg->ops_AttrList);
     data->score      = (Object*)GetTagData(MUIA_CSolitaire_Score     , 0, msg->ops_AttrList);
-    SetGameMode(cl,obj,GAMEMODE_KLONDIKE);
     return (ULONG) obj;
   }
   else
@@ -1350,7 +1349,7 @@ DISPATCHERPROTO(CSolitaire_Dispatcher)
     case MUIM_CSolitaire_Undo     : Undo(data);          return 0;
     case MUIM_CSolitaire_Sweep    : Sweep(data);         return 0;
     case MUIM_CSolitaire_Move     : Suggest(data, TRUE); return 0;
-    case MUIM_CSolitaire_GameMode : return SetGameMode(cl, obj, ((struct MUIP_Settings_GameMode *)msg)->mode);
+    case MUIM_CSolitaire_GameMode : return SetGameMode(cl, obj, ((struct MUIP_CSolitaire_GameMode *)msg)->mode);
   }
   return DoSuperMethodA(cl, obj, msg);
 }

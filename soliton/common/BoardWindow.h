@@ -26,6 +26,7 @@ extern struct MUI_CustomClass *CL_BoardWindow;
 #define MUIM_BoardWindow_Quit           (TAGBASE_KAI | 0x1101)
 #define MUIM_BoardWindow_NewSettings    (TAGBASE_KAI | 0x1102)
 #define MUIM_BoardWindow_NewGame        (TAGBASE_KAI | 0x1103)
+#define MUIM_BoardWindow_GameMode       (TAGBASE_KAI | 0x2021)  /* [IS.] */
 
 #define MUIA_BoardWindow_ProfileManager (TAGBASE_KAI | 0x1111)  /* [I..} */
 #define MUIA_BoardWindow_Statistics     (TAGBASE_KAI | 0x1112)  /* [I..} */

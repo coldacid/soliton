@@ -39,9 +39,9 @@ __near LONG __stack = 20000;
 LONG _stack = 20000;
 #endif
 
-char *VERSION_STRING = "$VER: Soliton 2.1 (29.03.2002)",
+char *VERSION_STRING = "$VER: Soliton 2.1 (28.04.2002)",
      *VERSION_NUMBER = "2.1",
-     *VERSION_DATE   = "2002-03-29",
+     *VERSION_DATE   = "2002-04-28",
      *APPNAME        = "Soliton";
 
 /****************************************************************************************
