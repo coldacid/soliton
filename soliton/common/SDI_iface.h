@@ -9,8 +9,8 @@
 #else
 #define EXEC_INTERFACE_DECLARE(x)
 #define EXEC_INTERFACE_GET_MAIN(interface,libbase) 1
-#define EXEC_INTERFACE_DROP(interface)
-#define EXEC_INTERFACE_ASSIGN(a,b)
+#define EXEC_INTERFACE_DROP(interface) do {} while(0);
+#define EXEC_INTERFACE_ASSIGN(a,b) do {} while(0);
 #endif
 
 #endif
