@@ -1,0 +1,67 @@
+Short:    V2.2 Klondike & Freecell card game
+Author:   Kai Nickel, Dirk Stoecker, Sebastian Bauer
+Uploader: mail@sebastianbauer.info (Sebastian Bauer)
+Type:     game/think
+
+Soliton 2.2 (16.03.2005)
+
+Soliton is a Klondike and Freecell card game.
+This program is GPL'ed software.
+
+Features
+--------
+
+* Cardsets are loaded via datatypes. You can also make them
+  easily by yourself using any size or color depth you like.
+  Look at Aminet/game/data/ to find some alternative cardsets!
+
+* Nice MUI user interface, runs on workbench or any other
+  screen. Works on Cybergraphics and Picasso, too.
+
+* Opaque drag'n'drop card movement.
+
+* Background pattern.
+
+* Supports REKO cards and zipped cardset files
+
+Requirements
+------------
+
+* Kickstart 3.0 (or higher)
+* MUI 3.6 (or higher)
+* SDI reko.datatype (recommended)
+* xadmaster.library (recommended)
+
+See http://www.sourceforge.net/projects/soliton/ for the development
+site of this program.
+
+Changes to last release 2.1
+---------------------------
+ * Uses now standard AmigaOS version scheme
+ * Minor changes
+ * Ported to OS4
+
+Changes to last release 2.00
+----------------------------
+
+* Now it is GPL and thus freely distributable and usable.
+* Development done using Soliton project at
+  http://www.sourceforge.net/projects/soliton/
+* Implemented much more localisation stuff.
+* Changed highscore and profile data formats.
+* Migrated code from C++ to plain C code and shortened
+  the resulting files.
+* Removed obsoleted code parts.
+* Joined Freecell and Klondike code to use one unique code
+  base. This also results in better statistics and more functions
+  for Freecell variant.
+* Joined both Soliton games completely.
+* Now detects REKO-cardsets automatically (by size) and needs no
+  longer the SOLITON keyword for reko.datatype.
+* Fixed crash when double clicking on klondike stack card before
+  clicking new button.
+* When XAD system is installed, the cardsets maybe archived in
+  any supported archive type (if there are multiple files in the
+  archive, the largest one is taken).
+* Fixed statistics overwrite bug.
+
