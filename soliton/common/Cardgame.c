@@ -1662,58 +1662,63 @@ struct Screen *scr, BOOL unpack)
     struct Library *xadMasterBase;
     if((xadMasterBase = OpenLibrary("xadmaster.library", 9)))
     {
-      struct xadArchiveInfo *ai;
-      if((ai = xadAllocObjectA(XADOBJ_ARCHIVEINFO, 0)))
-      {
-        if(!xadGetInfo(ai, XAD_INFILENAME, name, TAG_DONE))
-        {
-          if(ai->xai_FileInfo)
-          {
-            STRPTR a;
-            struct xadFileInfo *fi, *fi2;
-            int i;
-
-            /* get largest file of archive */
-            fi = ai->xai_FileInfo;
-            for(fi2 = fi->xfi_Next; fi2; fi2 = fi2->xfi_Next)
-            {
-              if(fi2->xfi_Size > fi->xfi_Size)
-                fi = fi2;
-            }
-
-            strcpy(data->tempcardname, "T:SolitonTmpCardset");
-            a = fi->xfi_FileName;
-            for(i = 0; a[i];)
-            {
-             if(a[i] == '.')
-             {
-               a = a+i+1;
-               i = 0;
-             }
-             else
-               ++i;
-            }
-            if(i < 7 && a != fi->xfi_FileName)
-            {
-              data->tempcardname[19] = '.';
-              for(i = 20; *a; ++i)
-                data->tempcardname[i] = *(a++);
-              data->tempcardname[i] = 0;
-            }
-
-            setStatus(data, MSG_EXTRACTING_CARDSET, name);
-            if(!xadFileUnArc(ai, XAD_OUTFILENAME, data->tempcardname,
-            XAD_ENTRYNUMBER, fi->xfi_EntryNumber, TAG_DONE))
-            {
-              if((obj = OpenCardset(data, data->tempcardname, scr, FALSE)))
-                data->tempcardset = data->tempcardname;
-              else
-                DeleteFile(data->tempcardname);
-            }
-          }
-          xadFreeInfo(ai);
-        }
-        xadFreeObjectA(ai,0);
+			EXEC_INTERFACE_DECLARE(struct xadMasterIFace *IxadMaster);
+    	if (EXEC_INTERFACE_GET_MAIN(IxadMaster,xadMasterBase))
+    	{
+	      struct xadArchiveInfo *ai;
+	      if((ai = xadAllocObjectA(XADOBJ_ARCHIVEINFO, 0)))
+	      {
+	        if(!xadGetInfo(ai, XAD_INFILENAME, name, TAG_DONE))
+	        {
+	          if(ai->xai_FileInfo)
+	          {
+	            xadSTRPTR a;
+	            struct xadFileInfo *fi, *fi2;
+	            int i;
+	
+	            /* get largest file of archive */
+	            fi = ai->xai_FileInfo;
+	            for(fi2 = fi->xfi_Next; fi2; fi2 = fi2->xfi_Next)
+	            {
+	              if(fi2->xfi_Size > fi->xfi_Size)
+	                fi = fi2;
+	            }
+	
+	            strcpy(data->tempcardname, "T:SolitonTmpCardset");
+	            a = fi->xfi_FileName;
+	            for(i = 0; a[i];)
+	            {
+	             if(a[i] == '.')
+	             {
+	               a = a+i+1;
+	               i = 0;
+	             }
+	             else
+	               ++i;
+	            }
+	            if(i < 7 && a != fi->xfi_FileName)
+	            {
+	              data->tempcardname[19] = '.';
+	              for(i = 20; *a; ++i)
+	                data->tempcardname[i] = *(a++);
+	              data->tempcardname[i] = 0;
+	            }
+	
+	            setStatus(data, MSG_EXTRACTING_CARDSET, name);
+	            if(!xadFileUnArc(ai, XAD_OUTFILENAME, data->tempcardname,
+	            XAD_ENTRYNUMBER, fi->xfi_EntryNumber, TAG_DONE))
+	            {
+	              if((obj = OpenCardset(data, data->tempcardname, scr, FALSE)))
+	                data->tempcardset = data->tempcardname;
+	              else
+	                DeleteFile(data->tempcardname);
+	            }
+	          }
+	          xadFreeInfo(ai);
+	        }
+	        xadFreeObjectA(ai,0);
+	      }
+	      EXEC_INTERFACE_DROP(IxadMaster);
       }
       CloseLibrary((struct Library *)xadMasterBase);
     }
