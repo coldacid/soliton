@@ -47,7 +47,7 @@ LONG xget(Object* obj, ULONG attribute)
   getatt(obj, attribute, &x);
   return x;
 }
-#ifndef USE_ZUNE
+#if !defined(USE_ZUNE) && !defined(__MORPHOS__)
 ULONG DoSuperNew(struct IClass* cl, Object* obj, ULONG tag1,...)
 {
   return DoSuperMethod(cl, obj, OM_NEW, &tag1, NULL);

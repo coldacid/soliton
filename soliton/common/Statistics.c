@@ -94,7 +94,7 @@ static void SaveHighscores(struct Statistics_Data *data)
   data->lost_all += data->lost_session + data->unfinished_game;
   data->time_all += data->time_session;
 
-  if((f = Open(FNAME, MODE_NEWFILE)))
+  if((f = Open((STRPTR)FNAME, MODE_NEWFILE)))
   {
     FPrintf(f, "%s\n%s\n", HID, data->scoresdate);
     Flush(f);
@@ -131,7 +131,7 @@ static void LoadHighscores(struct Statistics_Data *data)
   data->lost_all = 0;
   data->time_all = 0;
 
-  if((f = Open(FNAME, MODE_OLDFILE))) 
+  if((f = Open((STRPTR)FNAME, MODE_OLDFILE))) 
   {
     char id[30];
 
@@ -179,8 +179,7 @@ static void LoadHighscores(struct Statistics_Data *data)
 static void updateDisplay(struct Statistics_Data *data)
 {
   static char str[20];
-  LONG s;
-  int games;
+  int s,games;
 
   // this game
   sprintf(str, "%d", data->turn_game);
@@ -267,7 +266,7 @@ static ULONG Statistics_Enter(struct IClass* cl, Object* obj, Msg msg)
   DisplayFunc / CompareFunc / DestructFunc
 ******************************************************************************/
 
-HOOKPROTONH(Highscore_DisplayFunc, LONG, char** array, struct Score* entry)
+LONG Highscore_DisplayFunc(struct Hook *hook, char** array, struct Score* entry)
 {
   static char buf1[25];
   static char buf2[25];
@@ -275,8 +274,8 @@ HOOKPROTONH(Highscore_DisplayFunc, LONG, char** array, struct Score* entry)
   static char buf4[25];
   if(entry)
   {
-    sprintf(buf1, "%d", entry->points);
-    sprintf(buf3, "%d:%02d min", entry->time/60, entry->time % 60);
+    sprintf(buf1, "%ld", entry->points);
+    sprintf(buf3, "%ld:%02ld min", entry->time/60, entry->time % 60);
     *array++ = entry->name;
     *array++ = buf1;
     *array++ = buf3;
@@ -296,22 +295,22 @@ HOOKPROTONH(Highscore_DisplayFunc, LONG, char** array, struct Score* entry)
   return 0;
 }
 
-HOOKPROTONH(Highscore_CompareFunc, LONG, struct Score* s2, struct Score* s1)
+LONG Highscore_CompareFunc(struct Hook *hook, struct Score* s2, struct Score* s1)
 {
   if (s1->points < s2->points) return 1;
   if (s1->points > s2->points) return -1;
   return 0;
 }
 
-HOOKPROTONHNO(Highscore_DestructFunc, LONG, struct Score* entry)
+LONG Highscore_DestructFunc(struct Hook *hook, Object *obj, struct Score* entry)
 {
   FreeVec(entry);
   return 0;
 }
 
-static struct Hook DispHook = {0,0, (HOOKFUNC)Highscore_DisplayFunc,0,0};
-static struct Hook CompHook = {0,0, (HOOKFUNC)Highscore_CompareFunc,0,0};
-static struct Hook DestHook = {0,0, (HOOKFUNC)Highscore_DestructFunc,0,0};
+MakeHook(DispHook,Highscore_DisplayFunc);
+MakeHook(CompHook,Highscore_CompareFunc);
+MakeHook(DestHook,Highscore_DestructFunc);
 
 /****************************************************************************************
   New / Dispose

@@ -24,8 +24,11 @@
 #include <workbench/workbench.h>
 #include <workbench/startup.h>
 #include <proto/exec.h>
-#include <proto/intuition.h>
 #include <proto/muimaster.h>
+
+/* Libraries which are declared here */
+#define __NOLIBBASE__
+#include <proto/intuition.h>
 
 #include "About.h"
 #include "BoardWindow.h"
@@ -39,7 +42,9 @@
 #include "Soliton.h"
 #include "Statistics.h"
 
-#ifdef __SASC
+#if defined(__MORPHOS__)
+unsigned long __stack = 20000*2;
+#elif defined(__SASC)
 __near LONG __stack = 20000;
 #elif defined(__VBCC)
 LONG _stack = 20000;

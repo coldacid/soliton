@@ -33,6 +33,9 @@
 #include "Settings.h"
 #include "Soliton.h"
 
+/* local structures */
+struct CSolitaire_Data;
+
 /* local functions */
 static void Undo_RemHead(struct CSolitaire_Data *data);
 static int Top(struct CSolitaire_Data *data, int p);

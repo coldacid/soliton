@@ -17,6 +17,8 @@
  */
 
 #include <proto/exec.h>
+
+#define __NOLIBBASE__
 #include <proto/locale.h>
 
 #define CATCOMP_NUMBERS

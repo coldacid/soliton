@@ -30,7 +30,10 @@
 #include <proto/graphics.h>
 #include <proto/timer.h>
 #include <proto/utility.h>
+
+#ifdef HAVE_XADMASTER_H
 #include <proto/xadmaster.h>
+#endif
 
 #include "Cardgame.h"
 #include "Locales.h"
@@ -476,7 +479,7 @@ static void Destruct(struct Cardgame_Data *data)
   {
     if(data->req->tr_node.io_Device)
       CloseDevice((struct IORequest *)data->req);
-    DeleteIORequest(data->req);
+    DeleteIORequest((struct IORequest*)data->req);
   }
   if(data->port)
     DeleteMsgPort(data->port);
@@ -641,11 +644,13 @@ static void drawBackground(struct Cardgame_Data *data, struct RastPort *rp, int 
     if(doneh < h)
       drawBackground(data, rp, x, y + doneh, w, h - doneh, offx, 0);
   }
+#ifndef __MORPHOS__
   else
   {
     SetAPen(rp, 0);
     RectFill(rp, x, y, x + w - 1, y + h - 1);
   }
+#endif
 }
 
 static int getRank(int nr, int *suit)
@@ -1644,7 +1649,7 @@ struct Screen *scr, BOOL unpack)
     return obj;
   else if(unpack)
   {
-    struct xadMasterBase *xadMasterBase;
+#ifdef HAVE_XADMASTER_H
     if((xadMasterBase = (struct xadMasterBase *)
     OpenLibrary("xadmaster.library", 9)))
     {
@@ -1703,6 +1708,7 @@ struct Screen *scr, BOOL unpack)
       }
       CloseLibrary((struct Library *)xadMasterBase);
     }
+#endif
   }
   return obj;
 }
@@ -1888,10 +1894,18 @@ static ULONG _New(struct IClass *cl, Object *obj, struct opSet* msg)
   struct Cardgame_Data *data;
   LONG tmp;
 
+#ifdef __MORPHOS__
+  obj = (Object*)DoSuperNew(cl, obj,
+                            MUIA_FillArea, TRUE,
+                            MUIA_DoubleBuffer, TRUE,
+                            MUIA_Font, MUIV_Font_Tiny,
+                            TAG_MORE, msg->ops_AttrList);
+#else
   obj = (Object*)DoSuperNew(cl, obj,
                             MUIA_FillArea, FALSE,
                             MUIA_Font, MUIV_Font_Tiny,
                             TAG_MORE, msg->ops_AttrList);
+#endif
   if (!obj) return 0;
 
 

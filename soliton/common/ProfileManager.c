@@ -148,7 +148,7 @@ static ULONG ProfileManager_LoadProfiles(struct IClass* cl, Object* obj/*, Msg m
   struct Profil *p = 0;
   BPTR f;
   
-  if((f = Open(FNAME, MODE_OLDFILE)))
+  if ((f = Open((STRPTR)FNAME, MODE_OLDFILE)))
   {
     if(getlin(f, id, sizeof(id)) && !strcmp(id, HID) && getlin(f, id, sizeof(id)))
     {
@@ -244,8 +244,8 @@ HOOKPROTONHNO(DestructFunc, LONG, struct Profil* entry)
   return 0;
 }
 
-static struct Hook DispHook = {0,0, (HOOKFUNC)DisplayFunc,0,0};
-static struct Hook DestructHook = {0,0, (HOOKFUNC)DestructFunc,0,0};
+MakeHook(DispHook,DisplayFunc);
+MakeHook(DestructHook,DestructFunc);
 
 /****************************************************************************************
   Add / Rem / Redefine / Select
@@ -464,7 +464,7 @@ static ULONG ProfileManager_Dispose(struct IClass* cl, Object* obj/*, Msg msg*/)
   LONG size, i;
   struct Profil * p;
 
-  if((f = Open(FNAME, MODE_NEWFILE)))
+  if ((f = Open((STRPTR)FNAME, MODE_NEWFILE)))
   {
     size = xget(data->LV_Profiles, MUIA_List_Entries);
     FPrintf(f, "%s\n%04ld %04ld\n", HID, size, xget(data->LV_Profiles, MUIA_List_Active));

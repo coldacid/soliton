@@ -26,10 +26,7 @@
 ****************************************************************************************/
 
 #include "SDI_compiler.h"
-#define HOOKPROTO(name, ret, obj, param) static SAVEDS ASM(ret) name(REG(a0, struct Hook *hook), REG(a2, obj), REG(a1, param))
-#define HOOKPROTONH(name, ret, obj, param) static SAVEDS ASM(ret) name(REG(a2, obj), REG(a1, param))
-#define HOOKPROTONHNO(name, ret, param) static SAVEDS ASM(ret) name(REG(a1, param))
-#define DISPATCHERPROTO(name) static ASM(ULONG) SAVEDS name(REG(a0, struct IClass * cl), REG(a2, Object * obj), REG(a1, Msg msg))
+#include "SDI_hook.h"
 
 #define TAGBASE_KAI (TAG_USER | (0617 << 16))
 
@@ -41,7 +38,11 @@
 #define setatt(obj,attr,value) SetAttrs(obj,attr,value,TAG_DONE)
 
 LONG xget(Object* obj, ULONG attribute);
+#ifdef __MORPHOS__
+#include <proto/alib.h>
+#else
 ULONG DoSuperNew(struct IClass* cl, Object* obj, ULONG tag1, ...);
+#endif
 void ErrorReq(int messagenum);
 
 /****************************************************************************************

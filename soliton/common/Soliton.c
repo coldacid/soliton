@@ -159,7 +159,7 @@ static ULONG Soliton_New(struct IClass* cl, Object* obj, struct opSet* msg)
     {
       ErrorReq(MSG_CREATE_MAINWINDOW);
       MUI_DisposeObject(obj);
-      return NULL;
+      return 0;
     }
 
     return (ULONG)obj;
