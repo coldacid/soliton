@@ -16,6 +16,9 @@ WHAT'S CHANGED FROM 2.00 to 2.1
    longer the SOLITON keyword for reko.datatype.
  * Fixed crash when double clicking on klondike stack card before
    clicking new button.
+ * When XAD system is installed, the cardsets maybe archived in
+   any supported archive type (if there are multiple files in the
+   archive, the largest one is taken).
 
 WHAT'S CHANGED FROM 1.71 to 2.00 (1999-03-06)
  * Freecell game mode. Soliton now consists of 2 programs:

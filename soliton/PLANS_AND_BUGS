@@ -4,7 +4,6 @@ ToDo:
  - Auto select cardsets option (random, saved in profiles file).
    - After every x (option) games or
    - After every x (option) program start
- - Shorten path names for Loading display (or make it dynamic).
  - last stats place is always replaced even if it was better than
    new one?
  - Add somewhat nicer default cardset handling (images for numbers and
@@ -16,4 +15,6 @@ ToDo:
    -> GameMode is not saved
    -> Settings object is not yet informed about mode change
    -> On loading no gamemode is selected
-   
+ - Fix Freecell-Cleanup handling
+ - Add Freecell move button support
+

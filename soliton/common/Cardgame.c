@@ -22,6 +22,7 @@
 #include <clib/alib_protos.h>
 #include <datatypes/pictureclass.h>
 #include <exec/memory.h>
+#include <proto/dos.h>
 #include <proto/datatypes.h>
 #include <proto/exec.h>
 #include <proto/intuition.h>
@@ -29,6 +30,7 @@
 #include <proto/graphics.h>
 #include <proto/timer.h>
 #include <proto/utility.h>
+#include <proto/xadmaster.h>
 
 #include "Cardgame.h"
 #include "Locales.h"
@@ -82,6 +84,8 @@ struct Cardgame_Data
   Object *                    cardset;
   struct BitMap *             cardset_bmp;
   STRPTR                      cardset_name;
+  STRPTR                      tempcardset;
+  UBYTE                       tempcardname[30];
 
   LONG                        cardWidth;
   LONG                        cardWidth2;
@@ -105,6 +109,7 @@ struct Cardgame_Data
 
   Object *                    statusWin;
   Object *                    statusText;
+  Object *                    statusFile;
 
   struct Pile *               pile;            /* pile array */
   LONG                        pileSize;        /*  Number of piles */
@@ -858,7 +863,7 @@ static void openStatus(struct Cardgame_Data *data)
   data->statusWin = WindowObject,
     //MUIA_Window_LeftEdge   , MUIV_Window_LeftEdge_Centered,
     //MUIA_Window_TopEdge    , MUIV_Window_TopEdge_Centered,
-    MUIA_Window_Width      , MUIV_Window_Width_Visible(30),
+    MUIA_Window_Width      , MUIV_Window_Width_Visible(40),
     MUIA_Window_CloseGadget, FALSE,
     MUIA_Window_DepthGadget, FALSE,
     MUIA_Window_SizeGadget , FALSE,
@@ -885,13 +890,11 @@ static void openStatus(struct Cardgame_Data *data)
                 End,
 
         Child, VGroup,
-          Child,  TextObject,
-                    MUIA_Text_Contents, GetStr(MSG_LOADING_CARDSET),
-                    End,
           Child,  data->statusText = TextObject,
                     End,
+          Child,  data->statusFile = TextObject,
+                    End,
           End,
-
         End,
     End;
   if(data->statusWin)
@@ -918,10 +921,31 @@ static void closeStatus(struct Cardgame_Data *data)
   setatt(app, MUIA_Application_Sleep, FALSE);
 }
 
-static void setStatus(struct Cardgame_Data *data, char* text)
+static void setStatus(struct Cardgame_Data *data, int action, char* text)
 {
+  setatt(data->statusText, MUIA_Text_Contents, GetStr(action));
   if(data->statusWin)
-    setatt(data->statusText, MUIA_Text_Contents, text);
+  {
+    int i, j;
+    if((i = strlen(text)) > 45)
+    {
+      char tt[50];
+
+      text += i-(45-3);
+      for(i = 0; i < 10 && text[i] != '/' && text[i] != ':'; ++i)
+        ;
+      if(i < 10)  /* start at directory boundaries, when less than 10 */
+        text += i; /* chars snipped */
+        
+      tt[0] = tt[1] = tt[2] = '.';
+      for(j = 0; text[j]; ++j)
+        tt[j+3] = text[j];
+      tt[j+3] = 0;
+      setatt(data->statusFile, MUIA_Text_Contents, tt);
+    }
+    else
+      setatt(data->statusFile, MUIA_Text_Contents, text);
+  }
 }
 
 /* Mouse-Events */
@@ -1602,6 +1626,88 @@ static void GetGhostBuffers(struct Cardgame_Data *data)
     data->opaque = FALSE;
 }
 
+static Object *OpenCardset(struct Cardgame_Data *data, STRPTR name,
+struct Screen *scr, BOOL unpack)
+{
+  Object *obj;
+
+  setStatus(data, MSG_LOADING_CARDSET, name);
+  if((obj = NewDTObject(name,
+  DTA_GroupID           , GID_PICTURE,
+  PDTA_FreeSourceBitMap , TRUE,
+  OBP_Precision         , PRECISION_IMAGE,
+  PDTA_Screen           , scr,
+  DTA_SourceType        , DTST_FILE,
+  PDTA_Remap            , TRUE,
+  PDTA_DestMode         , PMODE_V43,
+  PDTA_UseFriendBitMap  , TRUE,
+  TAG_DONE)))
+    return obj;
+  else if(unpack)
+  {
+    struct xadMasterBase *xadMasterBase;
+    if((xadMasterBase = (struct xadMasterBase *)
+    OpenLibrary("xadmaster.library", 9)))
+    {
+      struct xadArchiveInfo *ai;
+      if((ai = xadAllocObjectA(XADOBJ_ARCHIVEINFO, 0)))
+      {
+        if(!xadGetInfo(ai, XAD_INFILENAME, name, TAG_DONE))
+        {
+          if(ai->xai_FileInfo)
+          {
+            STRPTR a;
+            struct xadFileInfo *fi, *fi2;
+            int i;
+
+            /* get largest file of archive */
+            fi = ai->xai_FileInfo;
+            for(fi2 = fi->xfi_Next; fi2; fi2 = fi2->xfi_Next)
+            {
+              if(fi2->xfi_Size > fi->xfi_Size)
+                fi = fi2;
+            }
+
+            strcpy(data->tempcardname, "T:SolitonTmpCardset");
+            a = fi->xfi_FileName;
+            for(i = 0; a[i];)
+            {
+             if(a[i] == '.')
+             {
+               a = a+i+1;
+               i = 0;
+             }
+             else
+               ++i;
+            }
+            if(i < 7 && a != fi->xfi_FileName)
+            {
+              data->tempcardname[19] = '.';
+              for(i = 20; *a; ++i)
+                data->tempcardname[i] = *(a++);
+              data->tempcardname[i] = 0;
+            }
+
+            setStatus(data, MSG_EXTRACTING_CARDSET, name);
+            if(!xadFileUnArc(ai, XAD_OUTFILENAME, data->tempcardname,
+            XAD_ENTRYNUMBER, fi->xfi_EntryNumber, TAG_DONE))
+            {
+              if((obj = OpenCardset(data, data->tempcardname, scr, FALSE)))
+                data->tempcardset = data->tempcardname;
+              else
+                DeleteFile(data->tempcardname);
+            }
+          }
+          xadFreeInfo(ai);
+        }
+        xadFreeObjectA(ai,0);
+      }
+      CloseLibrary((struct Library *)xadMasterBase);
+    }
+  }
+  return obj;
+}
+
 static ULONG _Setup(struct IClass* cl, Object* obj, Msg msg)
 {
   struct Cardgame_Data *data;
@@ -1619,7 +1725,7 @@ static ULONG _Setup(struct IClass* cl, Object* obj, Msg msg)
   data->pattern = NULL;
   if(data->pattern_name && strcmp(data->pattern_name, ""))
   {
-    setStatus(data, data->pattern_name);
+    setStatus(data, MSG_LOADING_PATTERN, data->pattern_name);
     data->pattern = NewDTObject(data->pattern_name,
                       DTA_GroupID           , GID_PICTURE,
                       PDTA_FreeSourceBitMap , TRUE,
@@ -1655,17 +1761,7 @@ static ULONG _Setup(struct IClass* cl, Object* obj, Msg msg)
   data->cardset = NULL;
   if(data->cardset_name && strcmp(data->cardset_name, ""))
   {
-    setStatus(data, data->cardset_name);
-    data->cardset = NewDTObject(data->cardset_name,
-                      DTA_GroupID           , GID_PICTURE,
-                      PDTA_FreeSourceBitMap , TRUE,
-                      OBP_Precision         , PRECISION_IMAGE,
-                      PDTA_Screen           , scr,
-                      DTA_SourceType        , DTST_FILE,
-                      PDTA_Remap            , TRUE,
-                      PDTA_DestMode         , PMODE_V43,
-                      PDTA_UseFriendBitMap  , TRUE,
-                      TAG_DONE);
+    data->cardset = OpenCardset(data, data->cardset_name, scr, TRUE);
     if(data->cardset)
     {
       struct BitMapHeader* bhd;
@@ -1730,6 +1826,11 @@ static ULONG _Cleanup(struct IClass* cl, Object* obj, Msg msg)
   if(data->cardset) 
   {
     DisposeDTObject(data->cardset);
+    if(data->tempcardset)
+    {
+      DeleteFile(data->tempcardset);
+      data->tempcardset = 0;
+    }
     bufferDispose(data->ghostBuffer);
     bufferDispose(data->ghostBuffer2);
     bufferDispose(data->ghostBufferOld);
