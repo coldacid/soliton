@@ -461,8 +461,8 @@ static void Init(struct Cardgame_Data *data, Object *o)
         data->ihnode.ihn_Flags   = MUIIHNF_TIMER;
         data->timer_blocked      = 1;
         TimerBase = (struct Device *) data->req->tr_node.io_Device;
-        EXEC_INTERFACE_GET_MAIN(ITimer,TimerBase);
-        GetSysTime(&data->lasttick);
+        if (EXEC_INTERFACE_GET_MAIN(ITimer,TimerBase))
+          GetSysTime(&data->lasttick);
       }
     }
   }
