@@ -607,7 +607,8 @@ static ULONG Statistics_Set(struct IClass* cl, Object* obj, struct opSet* msg)
         pos = xget(data->LI_Highscores, MUIA_List_Entries);
         DoMethod(data->LI_Highscores, MUIM_List_GetEntry, pos-1, &s);
 
-        if(!s || s->points <= data->score_game)
+        /* We have a sorted list here, so the last element will be always the smallest */
+        if(!s || s->points <= data->score_game || pos != MAXSCORES)
         {
           /*
           **  In Highscores aufnehmen

@@ -186,11 +186,13 @@ static BOOL Finished(struct CSolitaire_Data *data)
       data->stats.finished = TRUE;
 
       data->stats.all_won++;
+			AddScore(&data->stats, 600 - data->stats.game_seconds); // Bonus
       DisplayStats(data);
 
       while(xget(data->obj, MUIA_Cardgame_TimerRunning))
         setatt(data->obj, MUIA_Cardgame_TimerRunning, FALSE);
 
+#if 0
       /* outside of MUI_RequestA to fix SAS-C optimizer bug */
       a = GetStr(MSG_REQ_GADGETS);
       b = GetStr(MSG_REQ_NEWGAME);
@@ -202,7 +204,9 @@ static BOOL Finished(struct CSolitaire_Data *data)
         while(xget(data->obj, MUIA_Cardgame_TimerRunning))
           setatt(data->obj, MUIA_Cardgame_TimerRunning, FALSE);
       }
+#endif
     }
+    DoMethod((Object*)xget(data->obj, MUIA_ApplicationObject), MUIM_Soliton_Statistics, TRUE);
   }
   else
   {
@@ -304,12 +308,76 @@ static void NewGame(struct CSolitaire_Data *data)
   if(data->gamemode == GAMEMODE_FREECELL)
   {
     int last;
+
+#if 0
+    /* Rightmost stack */
+    cards[5] = 14; /* Cross As */
+    cards[4] = 2; /* Cross 2 */
+    cards[3] = 3;
+    cards[2] = 4;
+    cards[1] = 5;
+    cards[0] = 6;
+
+    /* Second right stack */
+    cards[11] = 7;
+    cards[10] = 8;
+    cards[9] = 9;
+    cards[8] = 10;
+    cards[7] = 11;
+    cards[6] = 12;
+
+    cards[17] = 13; /* Cross King */
+    cards[16] = 27; /* Caro As */
+    cards[15] = 15;
+    cards[14] = 16;
+    cards[13] = 17;
+    cards[12] = 18;
+
+    cards[23] = 19;
+    cards[22] = 20;
+    cards[21] = 21;
+    cards[20] = 22;
+    cards[19] = 23;
+    cards[18] = 24;
+
+    cards[30] = 25;
+    cards[29] = 26;
+    cards[28] = 40;
+    cards[27] = 28;
+    cards[26] = 29;
+    cards[25] = 30;
+    cards[24] = 31;
+
+    cards[37] = 32;
+    cards[36] = 33;
+    cards[35] = 34;
+    cards[34] = 35;
+    cards[33] = 36;
+    cards[32] = 37;
+    cards[31] = 38;
+
+    cards[44] = 39;
+    cards[43] = 53;
+    cards[42] = 41;
+    cards[41] = 42;
+    cards[40] = 43;
+    cards[39] = 44;
+    cards[38] = 45;
+
+    cards[51] = 46;
+    cards[50] = 47;
+    cards[49] = 48;
+    cards[48] = 49;
+    cards[47] = 50;
+    cards[46] = 51;
+    cards[45] = 52;
+#else
+    srand(time(0));
     /* fill cards stacks and make them random ordered */
 
     for(i = 0; i < 52; i++)
       cards[i] = i + 2;
 
-    srand(time(0));
     for(i = 1; i < 100; i++)
     {
       int z1,z2,tmp;
@@ -320,6 +388,7 @@ static void NewGame(struct CSolitaire_Data *data)
       cards[z1] = cards[z2];
       cards[z2] = tmp;
     }
+#endif
 
     last = 52;
     for(i = 0; i < 8; i++)
