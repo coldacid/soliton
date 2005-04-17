@@ -642,7 +642,7 @@ static void DisplayStats(struct CSolitaire_Data *data)
   Object *app;
 
   s = data->stats.game_seconds;
-  SPrintf(str, "%ld:%02d ", s / 60, s % 60);
+  SPrintf(str, "%ld:%02ld ", s / 60, s % 60);
   setatt(data->timer, MUIA_Text_Contents, str);
 
   SPrintf(str, "%ld", data->stats.game_score);
