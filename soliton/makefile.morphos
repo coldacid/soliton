@@ -1,0 +1,127 @@
+# Soliton cardgames for Amiga computers
+# Copyright (C) 1997-2001 Kai Nickel and other authors
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+OPTS     = -noixemul -mcpu=750 -O2
+SCOPTS   = -lm $(OPTS) -ldebug
+
+FOPT     = DEF=FREECELL
+
+CP       = copy
+RM       = delete
+
+CC       = ppc-morphos-gcc
+STRIP    = ppc-morphos-strip
+TO       = -o
+LTO      = -o
+LINK     =
+INC      =
+
+CATCOMP  = catcomp
+CATCOMPH = CFILE
+
+ODIR     = obj/
+
+IPATH    = images/
+LPATH    = locale/
+MPATH    = common/
+INCPATH  = -I$(INC) -I$(MPATH) $(INC) -I$(IPATH)
+
+OBJ = $(ODIR)About.o $(ODIR)CButton.o $(ODIR)Locales.o \
+      $(ODIR)MUITools.o $(ODIR)ProfileManager.o $(ODIR)BoardWindow.o \
+      $(ODIR)CSolitaire.o $(ODIR)Main.o $(ODIR)Settings.o \
+      $(ODIR)Soliton.o $(ODIR)Statistics.o $(ODIR)Cardgame.o $(ODIR)Support.o
+
+LOCALEINC   = $(MPATH)Locales.h $(MPATH)Catalog.h
+
+all: Soliton
+
+Soliton: $(ODIR)Soliton
+	$(CP) $(ODIR)Soliton $@
+	protect Soliton rwed
+
+clean:
+	$(RM) $(OBJ) $(ODIR)Soliton $(ODIR)Soliton.lnk $(MPATH)Catalog.h
+
+$(ODIR)Soliton: $(OBJ)
+	$(CC) $(LINK) $(OBJ) $(SCOPTS) $(LTO) $@.db
+	$(STRIP) --remove-section=.comment $@.db -o $@
+
+$(ODIR)About.o: $(MPATH)About.c $(MPATH)About.h $(LOCALEINC) \
+  $(MPATH)MUITools.h $(IPATH)IMG_About.c
+	$(CC) $(OPTS) $(INCPATH) -c $(MPATH)About.c $(TO) $@
+
+$(ODIR)BoardWindow.o: $(MPATH)BoardWindow.c $(MPATH)BoardWindow.h $(LOCALEINC) \
+  $(MPATH)Cardgame.h $(MPATH)About.h $(MPATH)CButton.h $(MPATH)MUITools.h \
+  $(MPATH)ProfileManager.h $(MPATH)Soliton.h $(MPATH)Settings.h \
+  $(MPATH)CSolitaire.h $(IPATH)IMG_CNew1.c $(IPATH)IMG_CNew2.c $(IPATH)IMG_CUndo1.c \
+  $(IPATH)IMG_CUndo2.c $(IPATH)IMG_CStats1.c $(IPATH)IMG_CStats2.c $(IPATH)IMG_CSweep1.c \
+  $(IPATH)IMG_CSweep2.c $(IPATH)IMG_CMove1.c $(IPATH)IMG_CMove2.c
+	$(CC) $(OPTS) $(INCPATH) -c $(MPATH)BoardWindow.c $(TO) $@
+
+$(ODIR)Cardgame.o: $(MPATH)Cardgame.c $(MPATH)Cardgame.h $(LOCALEINC) $(MPATH)MUITools.h \
+  $(IPATH)IMG_Time.c
+	$(CC) $(OPTS) $(INCPATH) -c $(MPATH)Cardgame.c $(TO) $@
+
+$(ODIR)CButton.o: $(MPATH)CButton.c $(MPATH)CButton.h $(LOCALEINC) $(MPATH)MUITools.h
+	$(CC) $(OPTS) $(INCPATH) -c $(MPATH)CButton.c $(TO) $@
+
+$(ODIR)CSolitaire.o: $(MPATH)CSolitaire.c $(MPATH)CSolitaire.h $(LOCALEINC) \
+  $(MPATH)Cardgame.h $(MPATH)CButton.h $(MPATH)MUITools.h \
+  $(MPATH)Settings.h $(MPATH)Soliton.h
+	$(CC) $(OPTS) $(INCPATH) -c $(MPATH)CSolitaire.c $(TO) $@
+
+$(ODIR)Locales.o: $(MPATH)Locales.c $(LOCALEINC)
+	$(CC) $(OPTS) $(INCPATH) -c $(MPATH)Locales.c $(TO) $@
+
+$(ODIR)Main.o: $(MPATH)Main.c $(LOCALEINC) \
+  $(MPATH)About.h $(MPATH)Cardgame.h $(MPATH)CButton.h $(MPATH)MUITools.h $(MPATH)ProfileManager.h \
+  $(MPATH)BoardWindow.h $(MPATH)CSolitaire.h $(MPATH)Settings.h \
+  $(MPATH)Soliton.h $(MPATH)Statistics.h
+	$(CC) $(OPTS) $(INCPATH) -c $(MPATH)Main.c $(TO) $@
+
+$(ODIR)MUITools.o: $(MPATH)MUITools.c $(MPATH)MUITools.h $(LOCALEINC) 
+	$(CC) $(OPTS) $(INCPATH) -c $(MPATH)MUITools.c $(TO) $@
+
+$(ODIR)ProfileManager.o: $(MPATH)ProfileManager.c $(MPATH)ProfileManager.h \
+  $(LOCALEINC) $(MPATH)Cardgame.h $(IPATH)IMG_Profiles.c $(MPATH)MUITools.h
+	$(CC) $(OPTS) $(INCPATH) -c $(MPATH)ProfileManager.c $(TO) $@
+
+$(ODIR)Settings.o: $(MPATH)Settings.c $(MPATH)Settings.h $(LOCALEINC) \
+  $(MPATH)MUITools.h $(MPATH)Soliton.h $(IPATH)IMG_Prefs.c
+	$(CC) $(OPTS) $(INCPATH) -c $(MPATH)Settings.c $(TO) $@
+
+$(ODIR)Soliton.o: $(MPATH)Soliton.c $(MPATH)Soliton.h $(LOCALEINC) \
+  $(MPATH)About.h $(MPATH)MUITools.h $(MPATH)ProfileManager.h \
+  $(MPATH)BoardWindow.h $(MPATH)Settings.h $(MPATH)Statistics.h
+	$(CC) $(OPTS) $(INCPATH) -c $(MPATH)Soliton.c $(TO) $@
+
+$(ODIR)Statistics.o: $(MPATH)Statistics.c $(MPATH)Statistics.h $(LOCALEINC) \
+  $(MPATH)MUITools.h $(MPATH)ProfileManager.h $(MPATH)Soliton.h \
+  $(MPATH)CSolitaire.h $(IPATH)IMG_Statistics.c $(IPATH)IMG_Winner.c
+	$(CC) $(OPTS) $(INCPATH) -c $(MPATH)Statistics.c $(TO) $@
+
+$(ODIR)Support.o: $(MPATH)Support.c $(MPATH)Support.h
+	$(CC) $(OPTS) $(INCPATH) -c $(MPATH)Support.c $(TO) $@
+
+#### Locale ####
+
+$(MPATH)Catalog.h: $(LPATH)Soliton.cd
+	$(CATCOMP) $(LPATH)Soliton.cd $(CATCOMPH) $@
+
+dump:
+	ppc-morphos-objdump --section-headers --all-headers --reloc --syms --disassemble-all $(ODIR)Soliton.db >Soliton.dump
+
