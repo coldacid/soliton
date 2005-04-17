@@ -23,16 +23,16 @@
 
 #include "Support.h"
 
-#ifdef __amigaos4__
+#if defined(__amigaos4__) || defined(__MORPHOS__)
 VARARGS68K LONG SPrintf(STRPTR buffer, CONST_STRPTR format,...)
 {
-    va_list argptr;
+    VA_LIST argptr;
     APTR args;
 
-    va_startlinear(argptr, format);
-    args = va_getlinearva(argptr, APTR);
+    VA_START(argptr, format);
+    args = VA_ARG(argptr, APTR);
     RawDoFmt((STRPTR)format, args, NULL, buffer);
-    va_end(argptr);
+    VA_END(argptr);
 
     return (LONG)strlen(buffer);
 }
@@ -45,6 +45,9 @@ VARARGS68K LONG SPrintf(STRPTR buffer, CONST_STRPTR format,...)
 	return (int)strlen(buffer);
 }
 
+#endif /* __amigaos4__ || __MORPHOS__ */
+
+#ifndef __amigaos4__
 struct snprintf_msg
 {
 	int size;
@@ -54,7 +57,7 @@ struct snprintf_msg
 /************************************************************
  Snprintf function for RawDoFmt()
 *************************************************************/
-ASM void snprintf_func(REG(d0,UBYTE chr), REG(a3,struct snprintf_msg *msg))
+static ASM void snprintf_func(REG(d0,UBYTE chr), REG(a3,struct snprintf_msg *msg))
 {
     if (msg->size)
     {
@@ -62,6 +65,18 @@ ASM void snprintf_func(REG(d0,UBYTE chr), REG(a3,struct snprintf_msg *msg))
     	msg->size--;
     }
 }
+
+#ifdef __MORPHOS__
+static void snprintf_gate(void)
+{
+	UBYTE               chr  = (UBYTE)                REG_D0;
+	struct snprintf_msg *msg = (struct snprintf_msg *)REG_A3;
+
+	snprintf_func(chr, msg);
+}
+
+static struct EmulLibEntry snprintf_trap = { TRAP_LIB, 0, &snprintf_gate, };
+#endif
 
 VARARGS68K LONG SNPrintf(STRPTR buffer,LONG buffer_size, CONST_STRPTR format,...)
 {
@@ -71,11 +86,24 @@ VARARGS68K LONG SNPrintf(STRPTR buffer,LONG buffer_size, CONST_STRPTR format,...
     msg.size = buffer_size;
     msg.buf = buffer;
 
+#ifdef __MORPHOS__
+    {
+		VA_LIST argptr;
+        APTR args;
+
+        VA_START(argptr, format);
+        args = VA_ARG(argptr, APTR);
+        RawDoFmt(format, args, (void *)&snprintf_trap, &msg);
+        VA_END(argptr);
+    }
+#else
     RawDoFmt(format, (((ULONG *)&format)+1), snprintf_func, &msg);
+#endif
 
     buffer[buffer_size-1] = 0;
 
     return (int)strlen(buffer);
 }
 
-#endif
+#endif /* __amigaos4__ */
+

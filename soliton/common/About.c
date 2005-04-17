@@ -156,7 +156,7 @@ struct MUI_CustomClass *CL_About = NULL;
 
 BOOL About_Init(void)
 {
-  if(!(CL_About = MUI_CreateCustomClass(NULL, MUIC_Window, NULL, 0, About_Dispatcher)))
+  if(!(CL_About = MUI_CreateCustomClass(NULL, MUIC_Window, NULL, 0, ENTRY(About_Dispatcher))))
   {
     ErrorReq(MSG_CREATE_ABOUTCLASS);
     return FALSE;

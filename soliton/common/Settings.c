@@ -278,7 +278,7 @@ struct MUI_CustomClass *CL_Settings = NULL;
 BOOL Settings_Init(void)
 {
   if(!(CL_Settings = MUI_CreateCustomClass(NULL, MUIC_Window, NULL,
-  sizeof(struct Settings_Data), Settings_Dispatcher)))
+  sizeof(struct Settings_Data), ENTRY(Settings_Dispatcher))))
   {
     ErrorReq(MSG_CREATE_SETTINGSCLASS);
     return FALSE;
@@ -341,7 +341,7 @@ DISPATCHERPROTO(NoneSlider_Dispatcher)
 BOOL NoneSlider_Init(void)
 {
   if(!(CL_NoneSlider = MUI_CreateCustomClass(NULL, MUIC_Slider, NULL, 
-  sizeof(struct NoneSlider_Data), NoneSlider_Dispatcher)))
+  sizeof(struct NoneSlider_Data), ENTRY(NoneSlider_Dispatcher))))
   {
     ErrorReq(MSG_CREATE_NONESLIDERCLASS);
     return FALSE;

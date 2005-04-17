@@ -1430,7 +1430,7 @@ struct MUI_CustomClass *CL_CSolitaire = NULL;
 BOOL CSolitaire_Init(void)
 {
   if(!(CL_CSolitaire = MUI_CreateCustomClass(NULL, NULL, CL_Cardgame,
-  sizeof(struct CSolitaire_Data), CSolitaire_Dispatcher)))
+  sizeof(struct CSolitaire_Data), ENTRY(CSolitaire_Dispatcher))))
   {
     ErrorReq(MSG_CREATE_CSOLITAIRECLASS);
     return FALSE;

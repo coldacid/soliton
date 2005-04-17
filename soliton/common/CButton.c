@@ -253,7 +253,7 @@ struct MUI_CustomClass *CL_CButton = NULL;
 BOOL CButton_Init()
 {
   if(!(CL_CButton = MUI_CreateCustomClass(NULL, MUIC_Group, NULL, 
-  sizeof(struct CButton_Data), CButton_Dispatcher)))
+  sizeof(struct CButton_Data), ENTRY(CButton_Dispatcher))))
   {
     ErrorReq(MSG_CREATE_CBUTTONCLASS);
     return FALSE;

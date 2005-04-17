@@ -42,7 +42,11 @@
 
 #include "SDI_iface.h"
 
+#ifdef __MORPHOS__
+struct Library *TimerBase;
+#else
 struct Device *TimerBase;
+#endif
 EXEC_INTERFACE_DECLARE(struct TimerIFace *ITimer);
 
 struct Buffer
@@ -460,7 +464,11 @@ static void Init(struct Cardgame_Data *data, Object *o)
         data->ihnode.ihn_Method  = MUIM_Cardgame_TimerEvent;
         data->ihnode.ihn_Flags   = MUIIHNF_TIMER;
         data->timer_blocked      = 1;
+#ifdef __MORPHOS__
+        TimerBase = (struct Library *)data->req->tr_node.io_Device;
+#else
         TimerBase = (struct Device *) data->req->tr_node.io_Device;
+#endif
         if (EXEC_INTERFACE_GET_MAIN(ITimer,TimerBase))
           GetSysTime(&data->lasttick);
       }
@@ -1909,6 +1917,9 @@ static ULONG _New(struct IClass *cl, Object *obj, struct opSet* msg)
   LONG tmp;
 
 #ifdef __MORPHOS__
+#ifndef MUIA_DoubleBuffer
+#define MUIA_DoubleBuffer                   0x8042a9c7 /* V20 isg BOOL              */
+#endif
   obj = (Object*)DoSuperNew(cl, obj,
                             MUIA_FillArea, TRUE,
                             MUIA_DoubleBuffer, TRUE,
@@ -2204,7 +2215,7 @@ struct MUI_CustomClass *CL_Cardgame = NULL;
 BOOL Cardgame_Init(void)
 {
   if(!(CL_Cardgame = MUI_CreateCustomClass(NULL, MUIC_Area, NULL,
-  sizeof(struct Cardgame_Data), Cardgame_Dispatcher)))
+  sizeof(struct Cardgame_Data), ENTRY(Cardgame_Dispatcher))))
   {
     ErrorReq(MSG_CREATE_CARDGAMECLASS);
     return FALSE;

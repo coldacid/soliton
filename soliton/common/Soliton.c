@@ -257,7 +257,7 @@ struct MUI_CustomClass *CL_Soliton = NULL;
 
 BOOL Soliton_Init(void)
 {
-  if(!(CL_Soliton = MUI_CreateCustomClass(NULL, MUIC_Application, NULL, sizeof(struct Soliton_Data), Soliton_Dispatcher)))
+  if(!(CL_Soliton = MUI_CreateCustomClass(NULL, MUIC_Application, NULL, sizeof(struct Soliton_Data), ENTRY(Soliton_Dispatcher))))
   {
     ErrorReq(MSG_CREATE_SOLITONCLASS);
     return FALSE;

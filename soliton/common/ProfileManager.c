@@ -237,6 +237,8 @@ HOOKPROTONH(DisplayFunc, LONG, char** array, struct Profil* entry)
   return 0;
 }
 
+MakeStaticHook(DispHook,DisplayFunc);
+
 HOOKPROTONHNO(DestructFunc, LONG, struct Profil* entry)
 {
   if(entry)
@@ -244,7 +246,6 @@ HOOKPROTONHNO(DestructFunc, LONG, struct Profil* entry)
   return 0;
 }
 
-MakeStaticHook(DispHook,DisplayFunc);
 MakeStaticHook(DestructHook,DestructFunc);
 
 /****************************************************************************************
@@ -510,7 +511,7 @@ struct MUI_CustomClass *CL_ProfileManager = NULL;
 BOOL ProfileManager_Init(void)
 {
   if(!(CL_ProfileManager = MUI_CreateCustomClass(NULL, MUIC_Window, NULL,
-  sizeof(struct ProfileManager_Data), ProfileManager_Dispatcher)))
+  sizeof(struct ProfileManager_Data), ENTRY(ProfileManager_Dispatcher))))
   {
     ErrorReq(MSG_CREATE_PROFILEMANAGERCLASS); 
     return FALSE;

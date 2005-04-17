@@ -51,14 +51,14 @@ LONG xget(Object* obj, ULONG attribute)
 #ifndef __MORPHOS__
 ULONG VARARGS68K DoSuperNew(struct IClass* cl, Object* obj, ...)
 {
-	ULONG rc;
+  ULONG rc;
 
-	VA_LIST args;
-	VA_START(args,obj);
+  VA_LIST args;
+  VA_START(args,obj);
   rc = DoSuperMethod(cl, obj, OM_NEW, VA_ARG(args,struct TagItem*), NULL);
   VA_END(args);
   
-	return rc;
+  return rc;
 }
 #endif
 

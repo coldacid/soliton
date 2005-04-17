@@ -270,7 +270,7 @@ static ULONG Statistics_Enter(struct IClass* cl, Object* obj, Msg msg)
   DisplayFunc / CompareFunc / DestructFunc
 ******************************************************************************/
 
-LONG Highscore_DisplayFunc(struct Hook *hook, char** array, struct Score* entry)
+HOOKPROTO(Highscore_DisplayFunc, LONG, char** array, struct Score* entry)
 {
   static char buf1[25];
   static char buf2[25];
@@ -299,21 +299,23 @@ LONG Highscore_DisplayFunc(struct Hook *hook, char** array, struct Score* entry)
   return 0;
 }
 
-LONG Highscore_CompareFunc(struct Hook *hook, struct Score* s2, struct Score* s1)
+MakeStaticHook(DispHook,Highscore_DisplayFunc);
+
+HOOKPROTO(Highscore_CompareFunc, LONG, struct Score* s2, struct Score* s1)
 {
   if (s1->points < s2->points) return 1;
   if (s1->points > s2->points) return -1;
   return 0;
 }
 
-LONG Highscore_DestructFunc(struct Hook *hook, Object *obj, struct Score* entry)
+MakeStaticHook(CompHook,Highscore_CompareFunc);
+
+HOOKPROTO(Highscore_DestructFunc, LONG, Object *obj, struct Score* entry)
 {
   FreeVec(entry);
   return 0;
 }
 
-MakeStaticHook(DispHook,Highscore_DisplayFunc);
-MakeStaticHook(CompHook,Highscore_CompareFunc);
 MakeStaticHook(DestHook,Highscore_DestructFunc);
 
 /****************************************************************************************
@@ -687,7 +689,7 @@ struct MUI_CustomClass *CL_Statistics = NULL;
 BOOL Statistics_Init(void)
 {
   if(!(CL_Statistics = MUI_CreateCustomClass(NULL, MUIC_Window, NULL,
-  sizeof(struct Statistics_Data), Statistics_Dispatcher)))
+  sizeof(struct Statistics_Data), ENTRY(Statistics_Dispatcher))))
   {
     ErrorReq(MSG_CREATE_STATISTICSCLASS);
     return FALSE;

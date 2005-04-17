@@ -35,6 +35,7 @@
 #include "ProfileManager.h"
 #include "Soliton.h"
 #include "Settings.h"
+#include "Support.h"
 
 #include "Soliton_rev.h"
 
@@ -431,7 +432,7 @@ struct MUI_CustomClass *CL_BoardWindow = NULL;
 BOOL BoardWindow_Init(void)
 {
   if(!(CL_BoardWindow = MUI_CreateCustomClass(NULL, MUIC_Window, NULL, 
-  sizeof(struct BoardWindow_Data), _Dispatcher)))
+  sizeof(struct BoardWindow_Data), ENTRY(_Dispatcher))))
   {
     ErrorReq(MSG_CREATE_BOARDWINDOWCLASS);
     return FALSE;
