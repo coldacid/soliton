@@ -166,6 +166,7 @@
     #define STDARGS
     #define STACKEXT
     #define REGARGS
+    #define SAVEDS
     #define VARARGS68K  __attribute__((varargs68k))
     #define FAR
     #define CHIP
