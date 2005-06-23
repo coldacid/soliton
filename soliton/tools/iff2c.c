@@ -3,7 +3,7 @@
 #define VERSION         "1"
 #define REVISION	"0"
 #define DATE	        "27.01.2002"
-#define AUTHOR          "by Dirk Stöcker <stoecker@epost.de>"
+#define AUTHOR          "by Dirk Stöcker <soft@dstoecker.de>"
 
 /* Programmheader
 

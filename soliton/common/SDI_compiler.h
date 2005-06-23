@@ -45,7 +45,7 @@
 ** (e.g. add your name or nick name).
 **
 ** Jens Langner <Jens.Langner@light-speed.de> and
-** Dirk Stöcker <stoecker@epost.de>
+** Dirk Stöcker <soft@dstoecker.de>
 */
 
 #ifdef ASM
